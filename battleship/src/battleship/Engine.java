@@ -26,7 +26,7 @@ private boolean field[][];
         return false;
     }
     
-    public void placeShip(Ship ship)
+    public void placeShip(Ship ship, int x, int y)
     {
         
     }
