@@ -21,4 +21,24 @@ public class Ship {
         this.size = size;
         ship = new boolean[size];
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public boolean[] getShip() {
+        return ship;
+    }
+
+    public Direction getDirection() {
+        return direction;
+    }
+    
+    
+    
+    
 }

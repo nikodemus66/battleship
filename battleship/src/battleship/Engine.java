@@ -9,7 +9,8 @@ package battleship;
  * @author nikodemus
  */
 public class Engine {
-private boolean field[][];
+    private boolean fields[][];
+    private Ship ships[][];
     
     private void startGame()
     {
@@ -28,6 +29,9 @@ private boolean field[][];
     
     public void placeShip(Ship ship, int x, int y)
     {
-        
+        if (ship != null)
+        {
+            ships[x][y] = ship;
+        }
     }
 }
