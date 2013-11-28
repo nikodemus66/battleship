@@ -14,8 +14,8 @@ public class Ship {
     private boolean ship[];
     public enum Direction{VERTIVAL, HORIZONTAL};
     private Direction direction;
-    
-    public Ship(String name, int size)
+
+    public Ship( String name, int size )
     {
         this.name = name;
         this.size = size;
