@@ -10,4 +10,13 @@ package battleship;
  */
 public class Engine {
     
+    private int posx;
+    private int posy;
+    
+            
+    public void placeShip(Ship ship, int posx, int posy){
+        
+        
+    }
+    
 }

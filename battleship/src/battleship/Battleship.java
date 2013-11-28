@@ -15,5 +15,7 @@ public class Battleship {
      */
     public static void main(String[] args) {
         // TODO code application logic here
+        
+        GUI gui = new GUI();
     }
 }
