@@ -9,9 +9,11 @@ package battleship;
  * @author nikodemus
  */
 public class Engine {
-
+    private static final int MAX_SHIPS = 10;
+    
     private View view;
     private Grid board; // Model
+    private int shipCount; 
 
     public Engine( View v, Grid m )
     {
@@ -44,8 +46,14 @@ public class Engine {
 
     public boolean playerReady()
     {
-      // TODO: wait for opponent to come ready
-        return false;
+        if (shipCount < MAX_SHIPS)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
     }
 
     public boolean shoot( int x, int y )
@@ -72,7 +80,7 @@ public class Engine {
     }
 
     public boolean placeShip( Ship ship, int x, int y )
-    {
+//    {
         Point points[] = new Point[ship.getSize()];
       
         if (ship.getDirection() == Ship.Direction.HORIZONTAL)
@@ -110,6 +118,8 @@ public class Engine {
             points[i].setType(Point.Type.SHIP);
         }
 
+        shipCount++;
+        
         return true;
     }
 }
