@@ -4,6 +4,8 @@
  */
 package battleship;
 
+import battleship.view.GUI2dView;
+
 /**
  *
  * @author nikodemus
@@ -19,7 +21,7 @@ public class Battleship
         //GUI gui = new GUI();
 
         Grid model = new Grid( 10, 10 ); // model
-        CommandLineView view = new CommandLineView( ); // view
+        View view = new GUI2dView( ); // view
         Engine engine = new Engine( view, model ); // controller
         engine.start( );
     }
