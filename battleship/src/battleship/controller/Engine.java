@@ -23,14 +23,18 @@ public class Engine {
   public void start( )
   {
     // TODO: ask user if he wants to play on network
-    startGame( );
     view.start( this );
+    startGame( );
   }
 
   private void startGame()
   {
     // TODO: if all players are ready we can start
     System.out.println( "Engine: game started" );
+    view.do_placeShip( ); // TODO: aslong as the player has ships left, we need to call this function
+    // TODO: opponent's turn
+
+    view.do_shoot( ); // TODO: check if shot
   }
 
   public Grid getGrid( )
@@ -76,6 +80,9 @@ public class Engine {
               }
           }
       }
+    // TODO: check if ship can be placed
+    //Point p = board.getPoint( x, y );
+    //p.setType( Point.Type.SHIP );
     return true;
   }
 }

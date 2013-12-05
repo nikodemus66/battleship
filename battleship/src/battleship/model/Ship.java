@@ -37,8 +37,15 @@ public class Ship {
     public Direction getDirection() {
         return direction;
     }
-    
-    
-    
-    
+
+
+    // e.g. Ship Defender: xxxx
+    public String toString( )
+    {
+      String s = "";
+      for( int i = 0; i <= size; i++ )
+        s += "x";
+
+      return "Ship " + name + ": " + s;
+    }
 }

@@ -35,4 +35,9 @@ public class Point
   {
     return type;
   }
+
+  public void setType( Type t )
+  {
+    type = t;
+  }
 }
