@@ -50,11 +50,25 @@ public class Engine {
 
     public boolean shoot( int x, int y )
     {
-      // TODO: check if hit and update board
-        Point p = board.getPoint( x, y );
-        p.shot( );
-        view.update( );
-        return false;
+        if (board.getPoint(x, y).isAttacked() == false)
+        {
+            board.getPoint(x, y).shot();
+            
+            if (board.getPoint(x, y).getType() == Point.Type.SHIP)
+            {
+                view.update( );
+                return true;
+            }
+            else
+            {
+                view.update( );
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public boolean placeShip( Ship ship, int x, int y )
