@@ -80,7 +80,7 @@ public class Engine {
     }
 
     public boolean placeShip( Ship ship, int x, int y )
-//    {
+    {
         Point points[] = new Point[ship.getSize()];
       
         if (ship.getDirection() == Ship.Direction.HORIZONTAL)
