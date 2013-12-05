@@ -81,45 +81,52 @@ public class Engine {
 
     public boolean placeShip( Ship ship, int x, int y )
     {
-        Point points[] = new Point[ship.getSize()];
-      
-        if (ship.getDirection() == Ship.Direction.HORIZONTAL)
+        if (shipCount < MAX_SHIPS)
         {
-            for (int i=0; i<ship.getSize(); i++)
-            {
-                if (board.getPoint(i, y).getType() == Point.Type.SHIP)
-                {
-                    return false;
-                }
-                else
-                {
-                    points[i] = board.getPoint(i, y);
-                }
-            }
-        }
-      
-        else if (ship.getDirection() == Ship.Direction.VERTIVAL)
-        {
-            for (int i=0; i<ship.getSize(); i++)
-            {
-                if (board.getPoint(x, i).getType() == Point.Type.SHIP)
-                {
-                    return false;
-                }
-                else
-                {
-                    points[i] = board.getPoint(x, i);
-                }
-            }
-        }
-      
-        for (int i=0; i<points.length; i++)
-        {
-            points[i].setType(Point.Type.SHIP);
-        }
+            Point points[] = new Point[ship.getSize()];
 
-        shipCount++;
-        
-        return true;
+            if (ship.getDirection() == Ship.Direction.HORIZONTAL)
+            {
+                for (int i=0; i<ship.getSize(); i++)
+                {
+                    if (board.getPoint(i, y).getType() == Point.Type.SHIP)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        points[i] = board.getPoint(i, y);
+                    }
+                }
+            }
+
+            else if (ship.getDirection() == Ship.Direction.VERTIVAL)
+            {
+                for (int i=0; i<ship.getSize(); i++)
+                {
+                    if (board.getPoint(x, i).getType() == Point.Type.SHIP)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        points[i] = board.getPoint(x, i);
+                    }
+                }
+            }
+            
+            for (Point point : points) 
+            {
+                point.setType(Point.Type.SHIP);
+            }
+
+            shipCount++;
+
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 }
