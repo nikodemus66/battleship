@@ -55,7 +55,27 @@ public class Engine {
 
   public boolean placeShip( Ship ship, int x, int y )
   {
-    // TODO: check if ship can be placed
+      if (ship.getDirection() == Ship.Direction.HORIZONTAL)
+      {
+          for (int i=0; i<ship.getSize(); i++)
+          {
+              if (board.getPoint(i, y).getType() == Point.Type.SHIP)
+              {
+                  return false;
+              }
+          }
+      }
+      
+      else if (ship.getDirection() == Ship.Direction.VERTIVAL)
+      {
+          for (int i=0; i<ship.getSize(); i++)
+          {
+              if (board.getPoint(x, i).getType() == Point.Type.SHIP)
+              {
+                  return false;
+              }
+          }
+      }
     return true;
   }
 }
