@@ -35,7 +35,7 @@ public class Map extends JPanel{
     
     public int[] getCoords(){
         
-        
+        posy = me.getY();
         posx = me.getX();
         listener.mouseClicked(me);
         
