@@ -6,6 +6,7 @@
 
 package battleship.view;
 import battleship.Ship;
+import battleship.model.Grid;
     import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -42,7 +43,7 @@ public class Map extends JPanel{
         return coords;
     }
     
-    public void update(){
+    public void update(Grid g){
              
     
       
