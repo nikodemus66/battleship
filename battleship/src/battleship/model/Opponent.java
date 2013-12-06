@@ -6,10 +6,33 @@
 
 package battleship;
 
+import battleship.view.*;
 /**
  *
  * @author brian
  */
-public class Opponent {
+public class Opponent implements View {
+    private Grid board;
     
+    public Grid getBoard()
+    {
+        return board;
+    }
+    
+    public void start( Engine engine )
+    {
+        
+    }
+    
+    public void do_placeShip( )
+    {
+        
+    }
+    
+    public void do_shoot( )
+    {
+    }
+    
+    public void update( )
+    {}
 }
