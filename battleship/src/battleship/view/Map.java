@@ -5,66 +5,53 @@
  */
 
 package battleship.view;
+import battleship.Ship;
     import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Random;
 /**
  *
- * @author brian
+ * @author Michael Zihlmann
  */
 public class Map extends JPanel{
-
-    public static final Color SHIP = new Color(214,217,223);
-    public static final Color OCEAN = new Color(0,0,153);
-
-    public static final Color[] TERRAIN = {
-        SHIP,
-        OCEAN,
-    };
-
-    public static final int NUM_ROWS = 10;
-    public static final int NUM_COLS = 10;
     
-    public static final int PREFERRED_GRID_SIZE_PIXELS = 20;
+    private int posx;
+    private int posy;
+    public static final int NUM_ROWS = 10;
+    public static final int NUM_COLS = 10;    
+    public static final int MAP_SIZE = 40;
+    GridLayout layout;
+    MouseListener listener;
+    int[] coords;
 
-    private final Color[][] terrainGrid;
 
     public Map(){
-        this.terrainGrid = new Color[NUM_ROWS][NUM_COLS];
-        Random r = new Random();
-        // Randomize the terrain
-        for (int i = 0; i < NUM_ROWS; i++) {
-            for (int j = 0; j < NUM_COLS; j++) {
-                int randomTerrainIndex = r.nextInt(TERRAIN.length);
-                Color randomColor = TERRAIN[randomTerrainIndex];
-                this.terrainGrid[i][j] = randomColor;
-            }
-        }
-        int preferredWidth = NUM_COLS * PREFERRED_GRID_SIZE_PIXELS;
-        int preferredHeight = NUM_ROWS * PREFERRED_GRID_SIZE_PIXELS;
-        setPreferredSize(new Dimension(preferredWidth, preferredHeight));
-    }
-        @Override
-    public void paintComponent(Graphics g) {
-        // Important to call super class method
-        super.paintComponent(g);
-        // Clear the board
-        g.clearRect(0, 0, getWidth(), getHeight());
-        // Draw the grid
-        int rectWidth = getWidth() / NUM_COLS;
-        int rectHeight = getHeight() / NUM_ROWS;
+        
+        super(new GridLayout(10,10));
 
-        for (int i = 0; i < NUM_ROWS; i++) {
-            for (int j = 0; j < NUM_COLS; j++) {
-                // Upper left corner of this terrain rect
-                int x = i * rectWidth;
-                int y = j * rectHeight;
-                Color terrainColor = terrainGrid[i][j];
-                g.setColor(terrainColor);
-                g.fillRect(x, y, rectWidth, rectHeight);
-            }
-        }
+        int preferredWidth = NUM_COLS * MAP_SIZE;
+        int preferredHeight = NUM_ROWS * MAP_SIZE;
+        setPreferredSize(new Dimension(preferredWidth, preferredHeight));
+        
     }
+    
+    public int[] getCoords(){
+        
+        MouseEvent place = null;
+        posx = place.getX();
+        listener.mouseClicked(place);
+        
+        return coords;
+    }
+    
+    public void update(){
+             
+    
+      
+    }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
