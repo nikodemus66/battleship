@@ -18,29 +18,25 @@ import java.util.Random;
 public class Map extends JPanel{
     
     private int posx;
-    private int posy;
-    public static final int NUM_ROWS = 10;
-    public static final int NUM_COLS = 10;    
-    public static final int MAP_SIZE = 40;
+    private int posy;   
+    public static final int MAP_SIZE = 400;
     GridLayout layout;
     MouseListener listener;
+    MouseEvent me;
     int[] coords;
 
 
     public Map(){
         
         super(new GridLayout(10,10));
-
-        int preferredWidth = NUM_COLS * MAP_SIZE;
-        int preferredHeight = NUM_ROWS * MAP_SIZE;
-        setPreferredSize(new Dimension(preferredWidth, preferredHeight));
+        setPreferredSize(new Dimension(MAP_SIZE, MAP_SIZE));
         
     }
     
     public int[] getCoords(){
         
-        MouseEvent place = null;
-        posx = place.getX();
+        me = new MouseEvent();
+        posx = me.getX();
         listener.mouseClicked(place);
         
         return coords;
