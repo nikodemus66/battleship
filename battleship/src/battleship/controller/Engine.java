@@ -4,6 +4,8 @@
  */
 package battleship;
 
+import java.net.*;
+
 /**
  *
  * @author nikodemus
@@ -13,16 +15,23 @@ public class Engine {
     
     private View view;
     private Grid board; // Model
-    private int shipCount; 
+    private int shipCount;
+    private Opponent opponent;
+    
+    private int port; 
 
-    public Engine( View v, Grid m )
+    public Engine(View v, Grid m)
     {
         this.view = v;
         this.board = m;
         System.out.println( "Engine: initialized" );
+        
+        //Test
+        opponent = new Opponent();
+        port = 2323;
     }
 
-    public void start( )
+    public void start()
     {
       // TODO: ask user if he wants to play on network
         view.start( this );
@@ -39,7 +48,7 @@ public class Engine {
         view.do_shoot( ); // TODO: check if shot
     }
 
-    public Grid getGrid( )
+    public Grid getGrid()
     {
         return board;
     }
@@ -56,20 +65,20 @@ public class Engine {
         }
     }
 
-    public boolean shoot( int x, int y )
+    public boolean shoot(int x, int y)
     {
-        if (board.getPoint(x, y).isAttacked() == false)
+        if (opponent.getBoard().getPoint(x, y).isAttacked() == false)
         {
-            board.getPoint(x, y).shot();
+            opponent.getBoard().getPoint(x, y).shot();
             
-            if (board.getPoint(x, y).getType() == Point.Type.SHIP)
+            if (opponent.getBoard().getPoint(x, y).getType() == Point.Type.SHIP)
             {
                 view.update( );
                 return true;
             }
             else
             {
-                view.update( );
+                view.update();
                 return false;
             }
         }
@@ -121,12 +130,17 @@ public class Engine {
             }
 
             shipCount++;
-
+            view.update();
             return true;
         }
         else
         {
             return false;
         }
+    }
+    
+    public boolean getOpponent(InetAddress ip)
+    {
+        return false;
     }
 }
