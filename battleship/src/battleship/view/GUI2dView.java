@@ -7,21 +7,34 @@
 package battleship.view;
 
 import battleship.Engine;
+import battleship.Ship;
 import battleship.View;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import javax.swing.*;
 /**
  *
  * @author brian
  */
 public class GUI2dView extends JFrame implements View {
-
+    
+    private Engine engine;
+    
     private JFrame frame;
     private JPanel north;
     private JPanel center;
     private JPanel south;
+    
+    private Map myMap;
+    private Map enemyMap;
+    
+    private JButton searchButton;
+    private JTextField ipAddressTextField;
     /**
      * Initialisiert das erste GUI beim Öffnen der Datei Battleship.exe
      */
@@ -40,7 +53,7 @@ public class GUI2dView extends JFrame implements View {
      */
 
     public void update( ){
-    
+        //myMap.update(engine.getGrid());
     }
     
     /**
@@ -56,11 +69,13 @@ public class GUI2dView extends JFrame implements View {
         //JPanels
         //JPanel opponent zusammensetzen
         north.add(new JLabel("enter opponent IP"));
-        north.add(new JTextField(10));
+        ipAddressTextField = new JTextField(10);
+        north.add(ipAddressTextField);
         //JButton search
-        JButton search = new JButton("search");
-        search.setSize(10,20);
-        north.add(search);
+        searchButton = new JButton("search");
+        searchButton.setSize(10,20);
+        searchButton.addActionListener(new ButtonActionListener());
+        north.add(searchButton);
         
         //JPanel invite zusammensetzen
         center.add(new JLabel("found player")); //name soll später hinzugefügt werden
@@ -91,7 +106,8 @@ public class GUI2dView extends JFrame implements View {
         south.removeAll();    
                 
         north.add(new JLabel("Schiffe plazieren"),BorderLayout.NORTH);
-        //center.add(new Playground...)
+        //myMap = new Map(...);
+        center.add(myMap);
         south.add(new JButton("ready"));
         south.add(new JButton("start"));
     }
@@ -101,15 +117,45 @@ public class GUI2dView extends JFrame implements View {
      */
     public void start( Engine engine ){
 
-        north.removeAll();
+        this.engine = engine;
+
+    }
+    
+    
+    public void do_placeShip(){
+    makeShipPlacingFrame();
+    // wird aufgerufen, wenn spieler Schiff auf Feld plaziert
+    myMap.getLocation();
+    //engine.placeShip(Ship, x, y);
+    }
+    public void do_startGame(){
+                north.removeAll();
         center.removeAll();
         south.removeAll();     
         
         setSize(600,400);
         north.add(new JLabel("Your turn"));
         north.add(new JLabel("Waiting for the opponent"));
-        //center.add(new Playground);
+        center.add(myMap);
+        center.add(enemyMap);
         south.add(new JButton("give up"));
+        //Nun wird gespielt
+        
+    }
+    public void do_shoot(){}
+    
+    private class ButtonActionListener implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent e) throws UnknownHostException{
+            if (e.getSource() == searchButton){
+                //get IP
+                String ipAddress = ipAddressTextField.getText();
+                InetAddress inetAdd = InetAddress.getByName(ipAddress);
+                engine.getOpponent(inetAdd);
+                String ip = inetAdd.toString();
+                System.out.println(ip);
+            }
+        }
     }
     
 }
