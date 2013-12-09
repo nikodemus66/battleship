@@ -10,8 +10,8 @@ public class HumanPlayer extends Player
 
   public HumanPlayer( )
   {
-    //this.view = new GUI2dView( );
-    this.view = new CommandLineView( );
+    this.view = new GUI2dView( );
+    //this.view = new CommandLineView( );
   }
 
   public void do_setup( Engine engine )
