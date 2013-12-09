@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package battleship;
+package battleship.model;
 
 /**
  *
@@ -23,13 +23,7 @@ public class Grid
     points = new Point[size_x][size_y];
 
     // initialize field
-    for( int x = 0; x < points.length; x++ )
-    {
-      for( int y = 0; y < points[x].length; y++ )
-      {
-        points[x][y] = new Point( Point.Type.WATER );
-      }
-    }
+    clear( );
   }
 
   public Point[][] getPointArray( )
@@ -42,6 +36,17 @@ public class Grid
   {
     //FIXME: return a copy
     return points[x][y];
+  }
+
+  public void clear( )
+  {
+    for( int x = 0; x < points.length; x++ )
+    {
+      for( int y = 0; y < points[x].length; y++ )
+      {
+        points[x][y] = new Point( Point.Type.WATER );
+      }
+    }
   }
 
   @Override

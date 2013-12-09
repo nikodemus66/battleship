@@ -2,145 +2,219 @@
  * Diese Klasse ist für die Spiellogik verantwortlich
  *
  */
-package battleship;
+package battleship.controller;
 
-import java.net.*;
+import battleship.model.*;
+import java.util.ArrayList;
 
 /**
  *
  * @author nikodemus
  */
-public class Engine {
-    private static final int MAX_SHIPS = 10;
-    
-    private View view;
-    private Grid board; // Model
-    private int shipCount;
-    private Opponent opponent;
-    
-    private int port; 
+public class Engine
+{
+  public enum PlayerType { HUMAN, KI, NETWORK }
 
-    public Engine(View v, Grid m)
+  private Player player; // active player
+  private Player opponend;
+
+  private static final int MAX_SHIPS = 10;
+  private int shipCount;
+
+  public Engine( )
+  {
+    System.out.println( "Engine: initialized" );
+  }
+
+  public void setPlayers( PlayerType one, PlayerType two )
+  {
+    player = createPlayer( one );
+    opponend = createPlayer( two );
+  }
+
+  private Player createPlayer( PlayerType type )
+  {
+    Player p = null;
+    switch( type )
     {
-        this.view = v;
-        this.board = m;
-        System.out.println( "Engine: initialized" );
-        
-        //Test
-        opponent = new Opponent();
-        port = 2323;
+      case HUMAN:
+        p = new HumanPlayer( );
+        break;
+      case KI:
+        p = new KIPlayer( );
+    }
+    return p;
+  }
+
+  private void changePlayer( )
+  {
+    Player tmp = player;
+    player = opponend;
+    opponend = tmp;
+  }
+
+  public void start()
+  {
+    if( player == null && opponend == null )
+    {
+      System.out.println( "Engine: Players have to be set before start" );
+      return;
     }
 
-    public void start()
+    // TODO: ask user if he wants to play on network
+    player.do_setup( this );
+    opponend.do_setup( this );
+
+    player.do_start( );
+    opponend.do_start( );
+    startGame( );
+  }
+
+  private void startGame()
+  {
+    // TODO: if all players are ready we can start
+    System.out.println( "Engine: game started" );
+    player.do_placeShip( ); // TODO: aslong as the player has ships left, we need to call this function
+    changePlayer( );
+    player.do_placeShip( ); // TODO: aslong as the player has ships left, we need to call this function
+
+    while( ! gameover( ))
     {
-      // TODO: ask user if he wants to play on network
-        view.start( this );
-        startGame( );
+      player.do_shoot( ); // TODO: check if shot
+      changePlayer( );
     }
+  }
 
-    private void startGame()
+  private boolean gameover( )
+  {
+    boolean attacked = true;
+    int i;
+    Point[][] arr = player.getGrid( ).getPointArray( );
+    for( i = 0; i < arr.length; i++ )
     {
-      // TODO: if all players are ready we can start
-        System.out.println( "Engine: game started" );
-        view.do_placeShip( ); // TODO: aslong as the player has ships left, we need to call this function
-      // TODO: opponent's turn
-
-        view.do_shoot( ); // TODO: check if shot
-    }
-
-    public Grid getGrid()
-    {
-        return board;
-    }
-
-    public boolean playerReady()
-    {
-        if (shipCount < MAX_SHIPS)
+      for( Point p : arr[i] )
+      {
+        if( p.getType( ) == Point.Type.SHIP )
         {
-            return false;
+           attacked &= p.isAttacked( );
         }
-        else
-        {
-            return true;
-        }
+      }
     }
 
-    public boolean shoot(int x, int y)
+    if( attacked ) // player lost
     {
-        if (opponent.getBoard().getPoint(x, y).isAttacked() == false)
-        {
-            opponent.getBoard().getPoint(x, y).shot();
-            
-            if (opponent.getBoard().getPoint(x, y).getType() == Point.Type.SHIP)
-            {
-                view.update( );
-                return true;
-            }
-            else
-            {
-                view.update();
-                return false;
-            }
-        }
-        else
-        {
-            return false;
-        }
+      player.youLost( );
+      opponend.youWon( );
+      return true;
     }
 
-    public boolean placeShip( Ship ship, int x, int y )
+    attacked = true;
+    arr = opponend.getGrid( ).getPointArray( );
+    for( i = 0; i < arr.length; i++ )
     {
-        if (shipCount < MAX_SHIPS)
+      for( Point p : arr[i] )
+      {
+        if( p.getType( ) == Point.Type.SHIP )
         {
-            Point points[] = new Point[ship.getSize()];
-
-            if (ship.getDirection() == Ship.Direction.HORIZONTAL)
-            {
-                for (int i=0; i<ship.getSize(); i++)
-                {
-                    if (board.getPoint(i, y).getType() == Point.Type.SHIP)
-                    {
-                        return false;
-                    }
-                    else
-                    {
-                        points[i] = board.getPoint(i, y);
-                    }
-                }
-            }
-
-            else if (ship.getDirection() == Ship.Direction.VERTIVAL)
-            {
-                for (int i=0; i<ship.getSize(); i++)
-                {
-                    if (board.getPoint(x, i).getType() == Point.Type.SHIP)
-                    {
-                        return false;
-                    }
-                    else
-                    {
-                        points[i] = board.getPoint(x, i);
-                    }
-                }
-            }
-            
-            for (Point point : points) 
-            {
-                point.setType(Point.Type.SHIP);
-            }
-
-            shipCount++;
-            view.update();
-            return true;
+           attacked &= p.isAttacked( );
         }
-        else
-        {
-            return false;
-        }
+      }
     }
-    
-    public boolean getOpponent(InetAddress ip)
+
+    if( attacked ) // player lost
     {
+      player.youWon( );
+      opponend.youLost( );
+      return true;
+    }
+    return false;
+  }
+
+  public Grid getGrid()
+  {
+    // TODO: return copy
+    return player.getGrid();
+  }
+
+  public Grid getGridOpponend()
+  {
+    // TODO: return copy
+    return opponend.getGrid();
+  }
+
+  public ArrayList<Ship> getShips( )
+  {
+    // return copy
+    return new ArrayList( player.getShips( ));
+  }
+
+  public boolean playerReady()
+  {
+    if (shipCount < MAX_SHIPS)
+    {
+      return false;
+    }
+    else
+    {
+      return true;
+    }
+  }
+
+  public boolean shoot(int x, int y)
+  {
+    // TODO: What happens if shoots at same location as before
+    opponend.getGrid().getPoint(x, y).shot();
+    if (opponend.getGrid().getPoint(x, y).getType() == Point.Type.SHIP)
+    {
+      return true;
+    }
+    return false;
+  }
+
+  public boolean placeShip( Ship ship, int x, int y )
+  {
+    //if( shipCount < MAX_SHIPS)
+      //return false;
+
+    Point points[] = new Point[ship.getSize()];
+
+    for( int i=0; i < ship.getSize( ); i++ )
+    {
+      Point p = null;
+      switch( ship.getDirection( ))
+      {
+        case HORIZONTAL:
+          p = player.getGrid( ).getPoint( i, y );
+          break;
+        case VERTICAL:
+          p = player.getGrid( ).getPoint( x, i );
+          break;
+      }
+
+      if( p.getType() == Point.Type.SHIP )
+      {
+        // cannot place ship because of other ship
+        //player.do_prompt( "" );
+        System.out.println( "Engine:placeShip( ): failed" );
         return false;
+      }
+      points[i] = p;
     }
+
+    for (Point p : points)
+    {
+      p.setType( Point.Type.SHIP );
+    }
+
+    shipCount++;
+    player.do_update();
+    return true;
+  }
+
+  public void restart( )
+  {
+    player.getGrid( ).clear( );
+    opponend.getGrid( ).clear( );
+    startGame( );
+  }
 }

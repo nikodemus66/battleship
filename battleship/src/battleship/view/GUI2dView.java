@@ -6,33 +6,30 @@
 
 package battleship.view;
 
-import battleship.Engine;
-import battleship.Ship;
-import battleship.View;
+import battleship.controller.*;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import javax.swing.*;
 /**
  *
  * @author brian
  */
 public class GUI2dView extends JFrame implements View {
-    
+
     private Engine engine;
-    
+
     private JFrame frame;
     private JPanel north;
     private JPanel center;
     private JPanel south;
-    
+
     private Map myMap;
     private Map enemyMap;
-    
+
     private JButton searchButton;
     private JTextField ipAddressTextField;
     /**
@@ -48,14 +45,46 @@ public class GUI2dView extends JFrame implements View {
         makeInitialFrame();
         setVisible(true);
     }
+
+    @Override
+    public void do_setup( Engine engine )
+    {
+        this.engine = engine;
+    }
+
+    /**
+     * starte Spiel wenn alle Spieler bereit sind
+     */
+    @Override
+    public void do_start( )
+    {
+    }
+
+    @Override
+    public void changingPlayer( )
+    {
+
+    }
+
+    @Override
+    public void youLost( )
+    {
+    }
+    
+    @Override
+    public void youWon( )
+    {
+    
+    }
+    
     /**
      * Update das Spielfeld
      */
-
-    public void update( ){
+    @Override
+    public void do_update( ){
         //myMap.update(engine.getGrid());
     }
-    
+
     /**
      * erzeuge alle Elemente im ersten Frame
      */
@@ -76,26 +105,26 @@ public class GUI2dView extends JFrame implements View {
         searchButton.setSize(10,20);
         searchButton.addActionListener(new ButtonActionListener());
         north.add(searchButton);
-        
+
         //JPanel invite zusammensetzen
         center.add(new JLabel("found player")); //name soll später hinzugefügt werden
         JButton invitePlayer = new JButton("invite");
         invitePlayer.setSize(10,20);
         center.add(invitePlayer);
-        
+
         //JPanel invited zusammensetzen
         south.add(new JLabel("you got invited"));
         //JButton accept
         JButton accept = new JButton("accept invite");
         accept.setSize(10,20);
         south.add(accept);
-        
+
         //GUI zusammensetzen
         add(north,BorderLayout.NORTH);
         add(center, BorderLayout.CENTER);
         add(south, BorderLayout.SOUTH);
     }
-    
+
     /**
      * erstelle das zweite Frame wo die Schiffe plaziert werden
      */
@@ -103,25 +132,16 @@ public class GUI2dView extends JFrame implements View {
         //alles entfernen
         north.removeAll();
         center.removeAll();
-        south.removeAll();    
-                
+        south.removeAll();
+
         north.add(new JLabel("Schiffe plazieren"),BorderLayout.NORTH);
         //myMap = new Map(...);
         center.add(myMap);
         south.add(new JButton("ready"));
         south.add(new JButton("start"));
     }
-    
-        /**
-     * starte Spiel wenn alle Spieler bereit sind
-     */
-    public void start( Engine engine ){
 
-        this.engine = engine;
-
-    }
-    
-    
+    @Override
     public void do_placeShip(){
     makeShipPlacingFrame();
     // wird aufgerufen, wenn spieler Schiff auf Feld plaziert
@@ -131,8 +151,8 @@ public class GUI2dView extends JFrame implements View {
     public void do_startGame(){
                 north.removeAll();
         center.removeAll();
-        south.removeAll();     
-        
+        south.removeAll();
+
         setSize(600,400);
         north.add(new JLabel("Your turn"));
         north.add(new JLabel("Waiting for the opponent"));
@@ -140,22 +160,24 @@ public class GUI2dView extends JFrame implements View {
         center.add(enemyMap);
         south.add(new JButton("give up"));
         //Nun wird gespielt
-        
+
     }
-    public void do_shoot(){}
     
+    @Override
+    public void do_shoot(){}
+
     private class ButtonActionListener implements ActionListener{
         @Override
-        public void actionPerformed(ActionEvent e) throws UnknownHostException{
+        public void actionPerformed(ActionEvent e) {
             if (e.getSource() == searchButton){
                 //get IP
                 String ipAddress = ipAddressTextField.getText();
-                InetAddress inetAdd = InetAddress.getByName(ipAddress);
-                engine.getOpponent(inetAdd);
-                String ip = inetAdd.toString();
-                System.out.println(ip);
+                //InetAddress inetAdd = InetAddress.getByName(ipAddress);
+                //engine.getOpponent(inetAdd);
+                //String ip = inetAdd.toString();
+                //System.out.println(ip);
             }
         }
     }
-    
+
 }

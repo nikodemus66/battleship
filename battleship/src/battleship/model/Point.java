@@ -4,7 +4,7 @@
  *
  */
 
-package battleship;
+package battleship.model;
 
 /**
  *

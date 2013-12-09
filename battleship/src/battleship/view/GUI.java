@@ -2,7 +2,9 @@
 Die Klasse stellt das Spielfeld dar.
  */
 
-package battleship;
+package battleship.view;
+
+import battleship.model.*;
 
 import java.awt.DisplayMode;
 import java.awt.GraphicsDevice;
@@ -35,7 +37,4 @@ public class GUI {
     device.setDisplayMode(dm);
     
     }
-    
-
-    
 }

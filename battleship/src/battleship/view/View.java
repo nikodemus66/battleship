@@ -4,7 +4,9 @@
  *
  */
 
-package battleship;
+package battleship.view;
+
+import battleship.controller.*;
 
 /**
  *
@@ -13,8 +15,12 @@ package battleship;
 
 public interface View
 {
-    void start( Engine engine );
+    void do_start( );
+    void do_setup( Engine engine );
     void do_placeShip( );
     void do_shoot( );
-    void update( );
+    void changingPlayer( );
+    void do_update( );
+    void youLost( );
+    void youWon( );
 }

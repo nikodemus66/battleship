@@ -2,18 +2,19 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package battleship;
+package battleship.model;
 
 /**
  *
  * @author nikodemus
  */
 public class Ship {
+
     private String name;
     private int size;
     private boolean ship[];
-    public enum Direction{VERTIVAL, HORIZONTAL};
-    private Direction direction;
+    public enum Direction{ VERTICAL, HORIZONTAL };
+    private Direction direction = Direction.VERTICAL;
 
     public Ship( String name, int size )
     {

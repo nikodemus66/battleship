@@ -4,8 +4,13 @@
  *
  */
 
-package battleship;
-import java.io.IOException;
+package battleship.view;
+
+import battleship.controller.*;
+import battleship.model.*;
+
+import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
  *
@@ -20,105 +25,128 @@ public class CommandLineView implements View
     System.out.println( "CommandLineView: initialized" );
   }
 
-  public void start( Engine engine )
+  public void do_setup( Engine engine )
   {
+    System.out.println( "CommandLineView:do_setup( )" );
     this.engine = engine;
-    System.out.println( "CommandLineView started" );
-    drawBoard( );
+  }
 
-    // place ships
-    //System.out.println( "Please place you ship ..." );
-    //byte[] tmp = new byte[255];
-    //try {
-      //System.in.read( tmp );
-    //} catch(IOException e) {
-      //System.out.println( "CommandLineView:start( ): reading failded" );
-    //}
-    //if( engine.placeShip( new Ship("Ship1", 2 ), 0, 5 ))
-    //{
-      //System.out.println( "CommandLineView: Ship placed!" );
-    //}
-    //else
-    //{
-      //System.out.println( "CommandLineView: Ship could not been placed!" );
-    //}
-
-    // ready -> startGame
-    //engine.playerReady( ); // returns when opponent is ready
-    //engine.shoot( 5, 5 );
+  public void do_start( )
+  {
+    System.out.println( "CommandLineView:do_start( )" );
+    draw( );
   }
 
   public void do_placeShip( )
   {
-    //List<Ships> ships = engine.getShips( );
-    //TODO: print ships
-    Ship ship1 = new Ship( "Destroyer", 3 );
-    Ship ship2 = new Ship( "Offender", 5 );
-    System.out.println( "0: " + ship1 );
-    System.out.println( "1: " + ship2 );
-
+    System.out.println( "CommandLineView:do_placeShip( )" );
+    ArrayList<Ship> ships = engine.getShips( );
     //int count = ships.list
-    int count = 2;
+    int count = ships.size( );
     while ( count > 0 )
     {
-      System.out.print( "Select ship to place: " );
-      byte[] tmp = new byte[255]; // FIXME: use streams for reading int
-      try {
-        System.in.read( tmp );
-      } catch(IOException e) {
-        System.out.println( "CommandLineView:start( ): reading failded" );
-      }
-
-      Ship toPlace = null;
-      switch( 0 )
+      for( int i = 0; i < ships.size( ); i++ )
       {
-        case 0:
-          toPlace = ship1;
-          break;
-        case 1:
-          toPlace = ship2;
-          break;
-        default:
-          System.out.println( "not a valid ship id: " + tmp );
+        System.out.println( i + ": " + ships.get( i ));
       }
 
-      if( engine.placeShip( toPlace, 0, 5 ))
+      System.out.print( "Select ship to place: " );
+      Scanner in = new Scanner( System.in );
+      int tmp = in.nextInt();
+      if( tmp >= ships.size( ) )
+      {
+        System.out.println( "Ship " + tmp + " not available, select another" );
+        continue;
+      }
+      System.out.print( "where to place [x y]?: " );
+      int x = in.nextInt();
+      int y = in.nextInt();
+
+      Ship toPlace = ships.get(tmp);
+
+      if( engine.placeShip( toPlace, x, y ))
       {
         System.out.println( "ship placed: "+ toPlace );
+        ships.remove( tmp );
         count--;
       }
-      drawBoard( );
+      draw( );
     }
+  }
+
+  public void changingPlayer( )
+  {
+    System.out.println( );
+    System.out.println( "CommandLineView:changingPlayer( )" );
+    System.out.println( "look away!" );
+    System.out.println( );
+  }
+
+  public void youLost( )
+  {
+    System.out.println( "Gameover: You lost!" );
+    if( restart( ))
+    {
+      engine.restart( );
+    }
+  }
+
+  public void youWon( )
+  {
+    System.out.println( "Gameover: You won!" );
+    if( restart( ))
+    {
+      engine.restart( );
+    }
+  }
+
+  private boolean restart( )
+  {
+    System.out.print( "Do you want to start over? [y/n]: " );
+    Scanner in = new Scanner( System.in );
+    String ans = in.nextLine();
+    if( "y".equals( ans.toLowerCase( )))
+      return true;
+
+    return false;
   }
 
   public void do_shoot( )
   {
+    System.out.println( "CommandLineView:do_shoot( )" );
     int count = 2;
-    System.out.print( "Where do you want to shoot? [x y]" );
-    byte[] tmp = new byte[255]; // FIXME: use streams for reading int
-    try {
-      System.in.read( tmp );
-    } catch(IOException e) {
-      System.out.println( "CommandLineView:start( ): reading failded" );
-    }
+    System.out.print( "Where do you want to shoot [x y]?: " );
+    Scanner in = new Scanner( System.in );
+    int x = in.nextInt();
+    int y = in.nextInt();
 
-    // TODO: parse where to shoot, validate
-
-    if( engine.shoot( 4, 5 ))
+    if( engine.shoot( x, y ))
     {
       System.out.println( "view has shot" );
     }
-    drawBoard( );
+    draw( );
   }
 
-  public void update( )
+  public void do_update( )
   {
+    System.out.println( "CommandLineView:do_update( )" );
   }
 
-  private void drawBoard( )
+  private void draw( )
   {
-    Grid board = engine.getGrid( );
+    System.out.print( "Your grid         ================== " );
+    drawBoard( engine.getGrid( ));
+
+    System.out.println( );
+    System.out.print( "Opponend's grid:  ================== " );
+    drawBoard( engine.getGridOpponend( ));
+    System.out.println( );
+  }
+
+  private void drawBoard( Grid board )
+  {
     System.out.println( board );
+    System.out.println( );
     Point[][] points = board.getPointArray( );
 
     System.out.print( "   " );
