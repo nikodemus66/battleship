@@ -14,15 +14,19 @@ import battleship.view.*;
  */
 public class Battleship
 {
-    /**
-     * @param args the command line arguments
-     */
-    public static void main( String[] args ) throws Exception
-    {
-        //GUI gui = new GUI();
-        View v = new CommandLineView( );
-        Player one = new HumanPlayer( v );
-        Engine engine = new Engine( one ); // controller
-        engine.start( );
-    }
+  /**
+   * @param args the command line arguments
+   */
+  public static void main( String[] args ) throws Exception
+  {
+    View v = null;
+    if( args.length > 0 && args[0].equals( "--cli" ))
+      v = new CommandLineView( );
+    else
+      v = new GUI2dView( );
+
+    Player one = new HumanPlayer( v );
+    Engine engine = new Engine( one ); // controller
+    engine.start( );
+  }
 }
