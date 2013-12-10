@@ -5,8 +5,8 @@
 package battleship;
 
 import battleship.controller.*;
-import battleship.controller.Engine.PlayerType;
 import battleship.model.*;
+import battleship.view.*;
 
 /**
  *
@@ -21,9 +21,9 @@ public class Battleship
     {
         System.out.println( "battleship started" );
         //GUI gui = new GUI();
-
-        Engine engine = new Engine( ); // controller
-        engine.setPlayers( PlayerType.HUMAN, PlayerType.KI );
+        View v = new CommandLineView( );
+        Player one = new HumanPlayer( v );
+        Engine engine = new Engine( one ); // controller
         engine.start( );
     }
 }

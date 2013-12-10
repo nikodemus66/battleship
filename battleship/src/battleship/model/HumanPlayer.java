@@ -8,10 +8,9 @@ public class HumanPlayer extends Player
 {
   private View view;
 
-  public HumanPlayer( )
+  public HumanPlayer( View view )
   {
-    this.view = new GUI2dView( );
-    //this.view = new CommandLineView( );
+    this.view = view;
   }
 
   public void do_setup( Engine engine )

@@ -21,15 +21,15 @@ public class Engine
   private static final int MAX_SHIPS = 10;
   private int shipCount;
 
-  public Engine( )
+  public Engine( Player one )
   {
+    player = one;
     System.out.println( "Engine: initialized" );
   }
 
-  public void setPlayers( PlayerType one, PlayerType two )
+  public void setOpponend( PlayerType type )
   {
-    player = createPlayer( one );
-    opponend = createPlayer( two );
+    opponend = createPlayer( type );
   }
 
   private Player createPlayer( PlayerType type )
@@ -37,11 +37,12 @@ public class Engine
     Player p = null;
     switch( type )
     {
-      case HUMAN:
-        p = new HumanPlayer( );
-        break;
       case KI:
         p = new KIPlayer( );
+        break;
+      case NETWORK:
+        //p = new KIPlayer( );
+        break;
     }
     return p;
   }

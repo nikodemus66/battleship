@@ -29,6 +29,7 @@ public class CommandLineView implements View
   {
     System.out.println( "CommandLineView:do_setup( )" );
     this.engine = engine;
+    engine.setOpponend( Engine.PlayerType.KI );
   }
 
   public void do_start( )

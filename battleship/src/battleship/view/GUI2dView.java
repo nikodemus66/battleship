@@ -7,6 +7,8 @@
 package battleship.view;
 
 import battleship.controller.*;
+import battleship.model.*;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -14,6 +16,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.InetAddress;
 import javax.swing.*;
+
 /**
  *
  * @author brian
@@ -32,6 +35,7 @@ public class GUI2dView extends JFrame implements View {
 
     private JButton searchButton;
     private JTextField ipAddressTextField;
+
     /**
      * Initialisiert das erste GUI beim Öffnen der Datei Battleship.exe
      */
@@ -50,6 +54,7 @@ public class GUI2dView extends JFrame implements View {
     public void do_setup( Engine engine )
     {
         this.engine = engine;
+        engine.setOpponend( Engine.PlayerType.KI );
     }
 
     /**
@@ -70,13 +75,13 @@ public class GUI2dView extends JFrame implements View {
     public void youLost( )
     {
     }
-    
+
     @Override
     public void youWon( )
     {
-    
+
     }
-    
+
     /**
      * Update das Spielfeld
      */
@@ -162,7 +167,7 @@ public class GUI2dView extends JFrame implements View {
         //Nun wird gespielt
 
     }
-    
+
     @Override
     public void do_shoot(){}
 
