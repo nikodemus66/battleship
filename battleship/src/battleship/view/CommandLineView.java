@@ -22,25 +22,21 @@ public class CommandLineView implements View
 
   public CommandLineView( )
   {
-    System.out.println( "CommandLineView: initialized" );
   }
 
   public void do_setup( Engine engine )
   {
-    System.out.println( "CommandLineView:do_setup( )" );
     this.engine = engine;
     engine.setOpponend( Engine.PlayerType.KI );
   }
 
   public void do_start( )
   {
-    System.out.println( "CommandLineView:do_start( )" );
     draw( );
   }
 
   public void do_placeShip( )
   {
-    System.out.println( "CommandLineView:do_placeShip( )" );
     ArrayList<Ship> ships = engine.getShips( );
     //int count = ships.list
     int count = ships.size( );
@@ -79,7 +75,6 @@ public class CommandLineView implements View
   {
     System.out.println( );
     System.out.println( "CommandLineView:changingPlayer( )" );
-    System.out.println( "look away!" );
     System.out.println( );
   }
 
@@ -114,7 +109,6 @@ public class CommandLineView implements View
 
   public void do_shoot( )
   {
-    System.out.println( "CommandLineView:do_shoot( )" );
     int count = 2;
     System.out.print( "Where do you want to shoot [x y]?: " );
     Scanner in = new Scanner( System.in );
@@ -123,24 +117,23 @@ public class CommandLineView implements View
 
     if( engine.shoot( x, y ))
     {
-      System.out.println( "view has shot" );
+      // successful
     }
     draw( );
   }
 
   public void do_update( )
   {
-    System.out.println( "CommandLineView:do_update( )" );
   }
 
   private void draw( )
   {
-    System.out.print( "Your grid         ================== " );
-    drawBoard( engine.getGrid( ));
-
-    System.out.println( );
     System.out.print( "Opponend's grid:  ================== " );
     drawBoard( engine.getGridOpponend( ));
+
+    System.out.println( );
+    System.out.print( "Your grid         ================== " );
+    drawBoard( engine.getGrid( ));
     System.out.println( );
   }
 

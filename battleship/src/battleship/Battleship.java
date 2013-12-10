@@ -17,9 +17,8 @@ public class Battleship
     /**
      * @param args the command line arguments
      */
-    public static void main( String[] args )
+    public static void main( String[] args ) throws Exception
     {
-        System.out.println( "battleship started" );
         //GUI gui = new GUI();
         View v = new CommandLineView( );
         Player one = new HumanPlayer( v );

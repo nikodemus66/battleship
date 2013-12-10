@@ -24,7 +24,6 @@ public class Engine
   public Engine( Player one )
   {
     player = one;
-    System.out.println( "Engine: initialized" );
   }
 
   public void setOpponend( PlayerType type )
@@ -54,12 +53,11 @@ public class Engine
     opponend = tmp;
   }
 
-  public void start()
+  public void start() throws Exception
   {
     if( player == null && opponend == null )
     {
-      System.out.println( "Engine: Players have to be set before start" );
-      return;
+      throw new Exception( "Engine: Players have to be set before start" );
     }
 
     // TODO: ask user if he wants to play on network
@@ -74,7 +72,6 @@ public class Engine
   private void startGame()
   {
     // TODO: if all players are ready we can start
-    System.out.println( "Engine: game started" );
     player.do_placeShip( ); // TODO: aslong as the player has ships left, we need to call this function
     changePlayer( );
     player.do_placeShip( ); // TODO: aslong as the player has ships left, we need to call this function
@@ -194,10 +191,7 @@ public class Engine
 
       if( p.getType() == Point.Type.SHIP )
       {
-        // cannot place ship because of other ship
-        //player.do_prompt( "" );
-        System.out.println( "Engine:placeShip( ): failed" );
-        return false;
+        return false; // cannot place ship because of other ship
       }
       points[i] = p;
     }
