@@ -146,9 +146,6 @@ public class CommandLineView implements View
     System.out.print( "   " );
     for( int x = 0; x < points[0].length; x++ )
       System.out.print( x + " " );
-    System.out.print( "\n   " );
-    for( int x = 0; x < points[0].length; x++ )
-      System.out.print( "- " );
     System.out.print( "\n" );
 
     for( int y = 0; y < points.length; y++ )
