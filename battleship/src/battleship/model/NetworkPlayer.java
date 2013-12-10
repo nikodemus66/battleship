@@ -4,10 +4,10 @@ package battleship.model;
 import battleship.controller.*;
 import battleship.view.*;
 
-public class KIPlayer extends Player
+public class NetworkPlayer extends Player
 {
   private Engine engine;
-  public KIPlayer( )
+  public NetworkPlayer( )
   {
   }
 
@@ -22,8 +22,6 @@ public class KIPlayer extends Player
 
   public void do_placeShip( )
   {
-    System.out.println( "KI: placeShip( )" );
-    engine.placeShip( new Ship( "Killership", 5), 5, 5 );
   }
 
   public void changingPlayer( )

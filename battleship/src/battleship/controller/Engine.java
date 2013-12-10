@@ -13,7 +13,7 @@ import java.util.ArrayList;
  */
 public class Engine
 {
-  public enum PlayerType { HUMAN, KI, NETWORK }
+  public enum PlayerType { HUMAN, AI, NETWORK }
 
   private Player player; // active player
   private Player opponend;
@@ -36,11 +36,11 @@ public class Engine
     Player p = null;
     switch( type )
     {
-      case KI:
-        p = new KIPlayer( );
+      case AI:
+        p = new AIPlayer( );
         break;
       case NETWORK:
-        //p = new KIPlayer( );
+        p = new NetworkPlayer( );
         break;
     }
     return p;

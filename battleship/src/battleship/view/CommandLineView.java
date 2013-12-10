@@ -27,7 +27,28 @@ public class CommandLineView implements View
   public void do_setup( Engine engine )
   {
     this.engine = engine;
-    engine.setOpponend( Engine.PlayerType.KI );
+
+    System.out.println( "Possible opponends:" );
+    System.out.println( "0: AI" );
+    System.out.println( "1: Network" );
+    System.out.println( );
+
+    Scanner in = new Scanner( System.in );
+    System.out.print( "Choose opponend: " );
+    int tmp = in.nextInt( );
+
+    switch( tmp )
+    {
+      case 0:
+        engine.setOpponend( Engine.PlayerType.AI );
+        break;
+      case 1:
+        // TODO: read ip and port
+        engine.setOpponend( Engine.PlayerType.NETWORK );
+        break;
+      default:
+        System.out.println( "error: opponend " + tmp + " does not exist" );
+    }
   }
 
   public void do_start( )
