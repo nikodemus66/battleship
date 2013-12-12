@@ -162,11 +162,17 @@ public class Engine
   {
     // TODO: What happens if shoots at same location as before
     opponend.getGrid().getPoint(x, y).shot();
-    if (opponend.getGrid().getPoint(x, y).getType() == Point.Type.SHIP)
-    {
-      return true;
-    }
-    return false;
+    
+    try {      
+            if (opponend.getGrid().getPoint(x, y).getType() == Point.Type.SHIP)
+            {
+              return true;
+            }
+            return false;
+        }
+    catch (Exception e) {
+            return false;
+        }
   }
 
   public boolean placeShip( Ship ship, int x, int y )
