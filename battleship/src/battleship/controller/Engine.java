@@ -182,10 +182,10 @@ public class Engine
       switch( ship.getDirection( ))
       {
         case HORIZONTAL:
-          p = player.getGrid( ).getPoint( i, y );
+          p = player.getGrid( ).getPoint( x+i, y );
           break;
         case VERTICAL:
-          p = player.getGrid( ).getPoint( x, i );
+          p = player.getGrid( ).getPoint( x, y+i );
           break;
       }
 
