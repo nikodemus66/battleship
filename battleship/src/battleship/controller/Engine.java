@@ -18,8 +18,9 @@ public class Engine
   private Player player; // active player
   private Player opponend;
 
-  private static final int MAX_SHIPS = 10;
-  private int shipCount;
+//  Zum Testen nur 2 Schiffe...
+//  private static final int MAX_SHIPS = 10;
+  public static final int MAX_SHIPS = 2;
 
   public Engine( Player one )
   {
@@ -72,10 +73,18 @@ public class Engine
   private void startGame()
   {
     // TODO: if all players are ready we can start
-    player.do_placeShip( ); // TODO: aslong as the player has ships left, we need to call this function
+    while (player.getShipCount() != MAX_SHIPS)
+    {
+      player.do_placeShip( ); // TODO: aslong as the player has ships left, we need to call this function
+    }
+    
     changePlayer( );
-    player.do_placeShip( ); // TODO: aslong as the player has ships left, we need to call this function
-
+    
+    while (player.getShipCount() != MAX_SHIPS)
+    {
+        player.do_placeShip( ); // TODO: aslong as the player has ships left, we need to call this function
+    }
+    
     while( ! gameover( ))
     {
       player.do_shoot( ); // TODO: check if shot
@@ -146,17 +155,17 @@ public class Engine
     return new ArrayList( player.getShips( ));
   }
 
-  public boolean playerReady()
-  {
-    if (shipCount < MAX_SHIPS)
-    {
-      return false;
-    }
-    else
-    {
-      return true;
-    }
-  }
+//  public boolean playerReady()
+//  {
+//    if (shipCount < MAX_SHIPS)
+//    {
+//      return false;
+//    }
+//    else
+//    {
+//      return true;
+//    }
+//  }
 
   public boolean shoot(int x, int y)
   {
@@ -212,7 +221,7 @@ public class Engine
       p.setType( Point.Type.SHIP );
     }
 
-    shipCount++;
+    player.incrementShipCount();
     player.do_update();
     return true;
   }
