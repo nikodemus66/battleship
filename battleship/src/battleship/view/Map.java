@@ -85,20 +85,6 @@ public class Map extends JPanel implements MouseListener{
       
     }
 
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                JFrame frame = new JFrame("Map");
-                Map map = new Map();
-                frame.add(map);
-                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                frame.pack();
-                frame.setVisible(true);
-            }
-        });
-    }
-
     @Override
     public void mouseClicked(MouseEvent e) {
         this.getCoords();
