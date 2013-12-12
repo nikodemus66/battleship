@@ -23,7 +23,12 @@ public class AIPlayer extends Player
   public void do_placeShip( )
   {
     System.out.println( "AI: placeShip( )" );
-    engine.placeShip( new Ship( "Killership", 5), 5, 5 );
+    
+    while (engine.placeShip( new Ship( "Killership", 5), 5, 5 ) == false)
+    {
+        
+    }
+    
   }
 
   public void changingPlayer( )
