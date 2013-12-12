@@ -8,34 +8,59 @@ package battleship.view;
 
 import battleship.controller.*;
 import battleship.model.*;
+import battleship.view.*;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 
+
 /**
- *
+ * Hier wird das Grafical User Interface implementiert.
+ * Dieses enthält eine Map, welche für das Plazieren der Schiffe und das
+ * Spielen benötigt wird.
+ * Das GUI kommuniziert dabei mit den Klassen Map und Engine.
  * @author brian
  */
 public class GUI2dView extends JFrame implements View {
 
     private Engine engine;
-
+    
     private JFrame frame;
     private JPanel north;
     private JPanel center;
     private JPanel south;
-
-    private Map myMap;
-    private Map enemyMap;
-
+    private JPanel east;
+    
+    private Map myMap = new Map();
+    private Map enemyMap = new Map();
+    
     private JButton searchButton;
     private JTextField ipAddressTextField;
-
+    private JButton schlachtschiffButton;
+    private JButton kreuzerButton;
+    private JButton zerstörerButton;
+    private JButton uBootButton;
+    private JLabel schlachtschiffLabel;
+    private JLabel kreuzerLabel;
+    private JLabel zerstörerLabel;
+    private JLabel uBootLabel;
+    
+    private Ship ship;
+    private int schlachtNumb = 1;     //1 x Schlachtschiff: 5 Kästchen
+    private int kreuzerNumb = 2;      //2 x Kreuzer : 4 Kästchen
+    private int zerstörerNumb = 3  ;  //3 x Zerstörer: 3 Kästchen
+    private int uBootNumb = 4;        //4 x U-boot : 2 Kästchen
+    private int shipNumb = schlachtNumb + kreuzerNumb + zerstörerNumb + uBootNumb;
+    
     /**
      * Initialisiert das erste GUI beim Öffnen der Datei Battleship.exe
      */
@@ -63,6 +88,7 @@ public class GUI2dView extends JFrame implements View {
     @Override
     public void do_start( )
     {
+        
     }
 
     @Override
@@ -134,25 +160,62 @@ public class GUI2dView extends JFrame implements View {
      * erstelle das zweite Frame wo die Schiffe plaziert werden
      */
     private void makeShipPlacingFrame(){
-        //alles entfernen
+                //alles entfernen
         north.removeAll();
         center.removeAll();
-        south.removeAll();
-
+        south.removeAll();    
+        east = new JPanel(new GridLayout(0,2));        
         north.add(new JLabel("Schiffe plazieren"),BorderLayout.NORTH);
+        updateShipNumbers();
         //myMap = new Map(...);
         center.add(myMap);
+        //1 x Schlachtschiff: 5 Kästchen
+        //2 x Kreuzer : 4 Kästchen
+        //3 x Zerstörer: 3 Kästchen
+        //4 x U-boot : 2 Kästchen
+        schlachtschiffButton = new JButton("Schlachtschiff(5)");
+        kreuzerButton = new JButton("Kreuzer (4)");
+        zerstörerButton = new JButton("Zerstörer(3)");
+        uBootButton = new JButton("U-bot (2)");
+        east.add(schlachtschiffButton);
+        schlachtschiffLabel = new JLabel("1/1");
+        east.add(schlachtschiffLabel);
+        east.add(kreuzerButton);
+        kreuzerLabel = new JLabel("2/2");
+        east.add(kreuzerLabel);
+        east.add(zerstörerButton);
+        zerstörerLabel = new JLabel("3/3");
+        east.add(zerstörerLabel);
+        east.add(uBootButton);
+        uBootLabel = new JLabel("4/4");
+        east.add(uBootLabel);
+        
         south.add(new JButton("ready"));
         south.add(new JButton("start"));
+        add(east, BorderLayout.EAST);
     }
 
+     /**
+     * zuerst wird das Frame aktualisiert.
+     * Danach können die Spieler ihre Schiffe plazieren.
+     */
     @Override
     public void do_placeShip(){
-    makeShipPlacingFrame();
+        makeShipPlacingFrame();
     // wird aufgerufen, wenn spieler Schiff auf Feld plaziert
-    myMap.getLocation();
-    //engine.placeShip(Ship, x, y);
+//        while(shipNumb!=0){
+//        int[] coords = myMap.getLocation();
+//        if(true == engine.placeShip(ship, x, y)){
+//            myMap.
+//            }
+//        updateShipNumbers();
+//        }
     }
+    
+    /**
+     * Hier wird das Spielfeld aufgebaut, welches für das eigentliche Spielen
+     * verwendet wird.
+     */
     public void do_startGame(){
                 north.removeAll();
         center.removeAll();
@@ -168,21 +231,59 @@ public class GUI2dView extends JFrame implements View {
 
     }
 
+    /**
+     * Hier wird der Spieler aufgerufen, das feindliche Feld anzugreifen.
+     */
     @Override
-    public void do_shoot(){}
-
+    public void do_shoot(){
+        int[] coords = myMap.getCoords();
+        engine.shoot(coords[0], coords[1]);
+    }
+    
+    /**
+     * Dies ist eine Innere Klasse, die als ActionListener für die JButtons
+     * verwendet wird.
+     */
     private class ButtonActionListener implements ActionListener{
         @Override
-        public void actionPerformed(ActionEvent e) {
+        public void actionPerformed(ActionEvent e){
             if (e.getSource() == searchButton){
-                //get IP
-                String ipAddress = ipAddressTextField.getText();
-                //InetAddress inetAdd = InetAddress.getByName(ipAddress);
-                //engine.getOpponent(inetAdd);
-                //String ip = inetAdd.toString();
-                //System.out.println(ip);
+                try {
+                    //get IP
+                    String ipAddress = ipAddressTextField.getText();
+                    InetAddress inetAdd = InetAddress.getByName(ipAddress);
+//                    engine.getOpponent(inetAdd);
+                    String ip = inetAdd.toString();
+                    System.out.println(ip);
+                } catch (UnknownHostException ex) {
+                    Logger.getLogger(GUI2dView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            //JButton schlachtschiffButton;
+            //JButton kreuzerButton;
+            //JButton zerstörerButton;
+            //JButton uBootButton;
+            //1 x Schlachtschiff: 5 Kästchen
+            //2 x Kreuzer : 4 Kästchen
+            //3 x Zerstörer: 3 Kästchen
+            //4 x U-boot : 2 Kästchen
+            if (e.getSource()== schlachtschiffButton){
+            ship = new Ship("Schlachtschiff", 5);
+            }
+            if(e.getSource()== kreuzerButton){
+            ship = new Ship("Kreuzer", 4);
+            }
+            if(e.getSource()== zerstörerButton){
+            ship = new Ship("Zerstörer", 3);
+            }
+            if(e.getSource()== uBootButton){
+            ship = new Ship("U-Boot", 2);
             }
         }
     }
-
+    private void updateShipNumbers(){
+            JLabel shipNumbersLabel = new JLabel("Schlachtschiffe: "+schlachtNumb + "   Kreuzer: "+kreuzerNumb+
+            "   Zerstörer: "+zerstörerNumb+"   U-Boote: "+uBootNumb);
+            north.add(shipNumbersLabel,BorderLayout.NORTH);
+    }
 }
