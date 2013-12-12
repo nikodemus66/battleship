@@ -79,7 +79,7 @@ public class GUI2dView extends JFrame implements View {
     public void do_setup( Engine engine )
     {
         this.engine = engine;
-        engine.setOpponend( Engine.PlayerType.AI );
+        engine.setOpponendAI( );
     }
 
     /**

@@ -25,24 +25,28 @@ public class Engine
     player = one;
   }
 
-  public void setOpponend( PlayerType type )
+  public boolean setOpponendAI( )
   {
-    opponend = createPlayer( type );
+    opponend = new AIPlayer( );
+    return true;
   }
 
-  private Player createPlayer( PlayerType type )
+  // server
+  public boolean setOpponendNetwork( )
   {
-    Player p = null;
-    switch( type )
-    {
-      case AI:
-        p = new AIPlayer( );
-        break;
-      case NETWORK:
-        p = new NetworkPlayer( );
-        break;
-    }
-    return p;
+    try {
+    opponend = new NetworkPlayer( );
+    } catch ( Exception e ) {}
+    return true;
+  }
+
+  // client
+  public boolean setOpponendNetwork( String ip )
+  {
+    try {
+    opponend = new NetworkPlayer( ip );
+    } catch ( Exception e ) {}
+    return true;
   }
 
   private void changePlayer( )
@@ -75,14 +79,14 @@ public class Engine
     {
       player.do_placeShip( ); // TODO: aslong as the player has ships left, we need to call this function
     }
-    
+
     changePlayer( );
-    
+
     while (player.getShipCount() < MAX_SHIPS)
     {
-        player.do_placeShip( ); // TODO: aslong as the player has ships left, we need to call this function
+      player.do_placeShip( ); // TODO: aslong as the player has ships left, we need to call this function
     }
-    
+
     while( ! gameover( ))
     {
       player.do_shoot( ); // TODO: check if shot
@@ -101,7 +105,7 @@ public class Engine
       {
         if( p.getType( ) == Point.Type.SHIP )
         {
-           attacked &= p.isAttacked( );
+          attacked &= p.isAttacked( );
         }
       }
     }
@@ -121,7 +125,7 @@ public class Engine
       {
         if( p.getType( ) == Point.Type.SHIP )
         {
-           attacked &= p.isAttacked( );
+          attacked &= p.isAttacked( );
         }
       }
     }
@@ -157,19 +161,19 @@ public class Engine
   {
     // TODO: What happens if shoots at same location as before
     opponend.getGrid().getPoint(x, y).shot();
-    
-    try {      
-            if (opponend.getGrid().getPoint(x, y).getType() == Point.Type.SHIP)
-            {
-                Ship s = opponend.getGrid().getPoint(x, y).getShip();
-//                shipDestroyed(s, x, y);
-              return true;
-            }
-            return false;
-        }
+
+    try {
+      if (opponend.getGrid().getPoint(x, y).getType() == Point.Type.SHIP)
+      {
+        Ship s = opponend.getGrid().getPoint(x, y).getShip();
+        //                shipDestroyed(s, x, y);
+        return true;
+      }
+      return false;
+    }
     catch (Exception e) {
-            return false;
-        }
+      return false;
+    }
   }
 
   public boolean placeShip( Ship ship, int x, int y )
@@ -179,21 +183,21 @@ public class Engine
     for( int i=0; i < ship.getSize( ); i++ )
     {
       Point p = null;
-      
+
       try {
-            switch( ship.getDirection( ))
-            {
-                case HORIZONTAL:
-                p = player.getGrid( ).getPoint( x+i, y );
-                break;
-                case VERTICAL:
-                p = player.getGrid( ).getPoint( x, y+i );
-                break;
-            }
-          } catch (Exception e) {
-              return false;
-          }
-                  
+        switch( ship.getDirection( ))
+        {
+          case HORIZONTAL:
+            p = player.getGrid( ).getPoint( x+i, y );
+            break;
+          case VERTICAL:
+            p = player.getGrid( ).getPoint( x, y+i );
+            break;
+        }
+      } catch (Exception e) {
+        return false;
+      }
+
       if( p.getType() == Point.Type.SHIP )
       {
         return false; // cannot place ship because of other ship
@@ -218,13 +222,5 @@ public class Engine
     opponend.getGrid( ).clear( );
     startGame( );
   }
-  
-//  private boolean shipDestroyed (Ship ship, int x, int y)
-//  {
-//      //                for (int i=0; )
-////                {
-////                    
-////                }
-//      return false;
-//  }
+
 }

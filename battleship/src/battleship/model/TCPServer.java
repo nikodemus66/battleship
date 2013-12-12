@@ -6,24 +6,29 @@ import java.io.*;
 
 public class TCPServer
 {
-  public TCPServer( ) throws IOException
+  public final static int PORT = 5001;
+
+  private ServerSocket serverSocket = null;
+  private Socket clientSocket = null;
+  private PrintWriter out   = null;
+  private BufferedReader in = null;
+  private Listener listener = null;
+
+  public TCPServer( Listener l ) throws IOException
   {
-     this( 5551 );
+    listener = l;
   }
 
-  public TCPServer( int port ) throws IOException
+  public void connect( ) throws IOException
   {
-    ServerSocket serverSocket = null;
     try {
-      serverSocket = new ServerSocket( port );
+      serverSocket = new ServerSocket( PORT );
     }
     catch (IOException e)
     {
-      System.err.println("Could not listen on port: 10007.");
-      System.exit(1);
+      System.err.println("Could not listen on port: " + PORT);
     }
 
-    Socket clientSocket = null;
     System.out.println ("Waiting for connection.....");
 
     try {
@@ -32,27 +37,32 @@ public class TCPServer
     catch (IOException e)
     {
       System.err.println("Accept failed.");
-      System.exit(1);
     }
 
     System.out.println ("Connection successful");
     System.out.println ("Waiting for input.....");
 
-    PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-    BufferedReader in = new BufferedReader(
-        new InputStreamReader( clientSocket.getInputStream()));
+    out = new PrintWriter(clientSocket.getOutputStream(), true);
+    in = new BufferedReader( new InputStreamReader( clientSocket.getInputStream()));
 
-    String inputLine;
+    send( "Hallo from Server");
 
-    while ((inputLine = in.readLine()) != null)
+    String message;
+    while ((message = in.readLine()) != null)
     {
-      System.out.println ("Server: " + inputLine);
-      out.println(inputLine);
-
-      if (inputLine.equals("Bye."))
+      listener.receive( message );
+      if (message.equals("Bye."))
         break;
     }
+  }
 
+  public void send( String message )
+  {
+    out.println( message );
+  }
+
+  public void disconnect( ) throws IOException
+  {
     out.close();
     in.close();
     clientSocket.close();

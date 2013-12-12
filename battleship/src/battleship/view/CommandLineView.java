@@ -30,7 +30,8 @@ public class CommandLineView implements View
 
     System.out.println( "Possible opponends:" );
     System.out.println( "0: AI" );
-    System.out.println( "1: Network" );
+    System.out.println( "1: Connect to network player" );
+    System.out.println( "2: Create network server" );
     System.out.println( );
 
     Scanner in = new Scanner( System.in );
@@ -40,11 +41,16 @@ public class CommandLineView implements View
     switch( tmp )
     {
       case 0:
-        engine.setOpponend( Engine.PlayerType.AI );
+        engine.setOpponendAI( );
         break;
       case 1:
         // TODO: read ip and port
-        engine.setOpponend( Engine.PlayerType.NETWORK );
+        System.out.print( "Enter IP of network player: " );
+        String ip = in.next( );
+        engine.setOpponendNetwork( ip );
+        break;
+      case 2:
+        engine.setOpponendNetwork( ); // server
         break;
       default:
         System.out.println( "error: opponend " + tmp + " does not exist" );
