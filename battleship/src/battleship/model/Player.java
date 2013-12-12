@@ -17,6 +17,7 @@ public abstract class Player
 {
   private Grid board = new Grid( 10,10 );
   private ArrayList<Ship> ships = new ArrayList<Ship>( );
+  private int shipCount;
 
   public Player( )
   {
@@ -32,6 +33,16 @@ public abstract class Player
   public ArrayList<Ship> getShips( )
   {
     return ships;
+  }
+  
+  public int getShipCount()
+  {
+      return shipCount;
+  }
+  
+  public void incrementShipCount()
+  {
+      this.shipCount++;
   }
 
   // engine calls these functions
