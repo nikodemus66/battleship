@@ -161,6 +161,8 @@ public class Engine
     try {      
             if (opponend.getGrid().getPoint(x, y).getType() == Point.Type.SHIP)
             {
+                Ship s = opponend.getGrid().getPoint(x, y).getShip();
+//                shipDestroyed(s, x, y);
               return true;
             }
             return false;
@@ -202,6 +204,7 @@ public class Engine
     for (Point p : points)
     {
       p.setType( Point.Type.SHIP );
+      p.setShip(ship);
     }
 
     player.incrementShipCount();
@@ -215,4 +218,13 @@ public class Engine
     opponend.getGrid( ).clear( );
     startGame( );
   }
+  
+//  private boolean shipDestroyed (Ship ship, int x, int y)
+//  {
+//      //                for (int i=0; )
+////                {
+////                    
+////                }
+//      return false;
+//  }
 }

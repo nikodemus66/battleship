@@ -8,13 +8,15 @@ import battleship.controller.*;
 public class AIPlayer extends Player
 {
   private Engine engine;
-  private int xShoot, yShoot;
+  private int xShoot, yShoot; //xHitFirst, yHitFirst;
   private boolean hasHit;
   private Ship.Direction actualDirection;
   private boolean sign;
   
   public AIPlayer( )
   {
+//      xHitFirst = 99;
+//      yHitFirst = 99;
       xShoot = 0;
       yShoot = 0;
       sign = false;
@@ -96,9 +98,32 @@ public class AIPlayer extends Player
           }
       }
       
+//      if(xHitFirst != 99)
+//      {
+//              
+//      }
+//          
+//      if(xHitFirst != 99)
+//      {
+//              
+//      }
+      
       while (engine.shoot(xShoot, yShoot))
       {
-          hasHit = true;
+          if (ShipDestroyed(xShoot, yShoot))
+          {
+              hasHit = false;
+          }
+          else
+          {
+              hasHit = true;
+              actualDirection = getRandomDirection();
+              xShoot = getRandomValue();
+              yShoot = getRandomValue();
+          }
+//          xHitFirst = xShoot;
+//          yHitFirst = yShoot;
+          
           
           switch(actualDirection){
               case HORIZONTAL:
@@ -154,4 +179,10 @@ public class AIPlayer extends Player
   {
       return (int)(Math.random()*9);
   }
+  
+  private boolean ShipDestroyed(int x, int y)
+  {
+      return false;
+  }
 }
+

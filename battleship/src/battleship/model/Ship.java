@@ -14,10 +14,11 @@ public class Ship {
     private int size;
     private boolean ship[];
     public enum Direction{ VERTICAL, HORIZONTAL };
-    private Direction direction = Direction.VERTICAL;
-
+    private Direction direction;
+    
     public Ship( String name, int size )
     {
+        direction = Direction.VERTICAL;
         this.name = name;
         this.size = size;
         ship = new boolean[size];
