@@ -25,7 +25,7 @@ public class AIPlayer extends Player
   {
         System.out.println( "AI: placeShip( )" );
     
-        if (this.shipCount != 0)
+        if (this.shipCount == 0)
         {
 //          1 Schlachtschiff 5 Felder
             while (engine.placeShip( new Ship( "Battleship", 5, getDirection()), (int)(Math.random()*9), (int)(Math.random()*9)) == false)

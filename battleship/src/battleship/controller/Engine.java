@@ -78,7 +78,7 @@ public class Engine
     
     changePlayer( );
     
-    while (player.getShipCount() != MAX_SHIPS)
+    while (player.getShipCount() < MAX_SHIPS)
     {
         player.do_placeShip( ); // TODO: aslong as the player has ships left, we need to call this function
     }
