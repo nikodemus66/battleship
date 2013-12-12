@@ -18,9 +18,7 @@ public class Engine
   private Player player; // active player
   private Player opponend;
 
-//  Zum Testen nur 2 Schiffe...
-//  private static final int MAX_SHIPS = 10;
-  public static final int MAX_SHIPS = 2;
+  public static final int MAX_SHIPS = 10;
 
   public Engine( Player one )
   {
@@ -73,7 +71,7 @@ public class Engine
   private void startGame()
   {
     // TODO: if all players are ready we can start
-    while (player.getShipCount() != MAX_SHIPS)
+    while (player.getShipCount() != 2) // Zum testen nur 2 Schiffe setzen... != MAX_SHIPS
     {
       player.do_placeShip( ); // TODO: aslong as the player has ships left, we need to call this function
     }
@@ -155,18 +153,6 @@ public class Engine
     return new ArrayList( player.getShips( ));
   }
 
-//  public boolean playerReady()
-//  {
-//    if (shipCount < MAX_SHIPS)
-//    {
-//      return false;
-//    }
-//    else
-//    {
-//      return true;
-//    }
-//  }
-
   public boolean shoot(int x, int y)
   {
     // TODO: What happens if shoots at same location as before
@@ -186,9 +172,6 @@ public class Engine
 
   public boolean placeShip( Ship ship, int x, int y )
   {
-    //if( shipCount < MAX_SHIPS)
-      //return false;
-
     Point points[] = new Point[ship.getSize()];
 
     for( int i=0; i < ship.getSize( ); i++ )
