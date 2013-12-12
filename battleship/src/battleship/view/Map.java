@@ -18,7 +18,7 @@ import java.awt.event.MouseListener;
  *
  * @author Michael Zihlmann
  */
-public class Map extends JPanel {
+public class Map extends JPanel implements MouseListener{
     
     private int posx;
     private int posy;   
@@ -68,11 +68,12 @@ public class Map extends JPanel {
     }
     
     
-    public void update(){
+    public void paint(){
         for (int i =0; i<(10*10); i++){
            
             field.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
             field.setBackground(Color.BLUE);
+            
             this.add(field);
             
             
@@ -90,13 +91,39 @@ public class Map extends JPanel {
             public void run() {
                 JFrame frame = new JFrame("Map");
                 Map map = new Map();
-                map.update();
                 frame.add(map);
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 frame.pack();
                 frame.setVisible(true);
             }
         });
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        this.getCoords();
+        
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
     
