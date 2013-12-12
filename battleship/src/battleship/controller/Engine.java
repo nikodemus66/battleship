@@ -179,16 +179,21 @@ public class Engine
     for( int i=0; i < ship.getSize( ); i++ )
     {
       Point p = null;
-      switch( ship.getDirection( ))
-      {
-        case HORIZONTAL:
-          p = player.getGrid( ).getPoint( x+i, y );
-          break;
-        case VERTICAL:
-          p = player.getGrid( ).getPoint( x, y+i );
-          break;
-      }
-
+      
+      try {
+            switch( ship.getDirection( ))
+            {
+                case HORIZONTAL:
+                p = player.getGrid( ).getPoint( x+i, y );
+                break;
+                case VERTICAL:
+                p = player.getGrid( ).getPoint( x, y+i );
+                break;
+            }
+          } catch (Exception e) {
+              return false;
+          }
+                  
       if( p.getType() == Point.Type.SHIP )
       {
         return false; // cannot place ship because of other ship
