@@ -15,6 +15,7 @@ public class Point
   public enum Type { WATER, SHIP }
   private Type type;
   private boolean attacked = false;
+  private Ship ship;
 
   public Point( Type t )
   {
@@ -39,5 +40,15 @@ public class Point
   public void setType( Type t )
   {
     type = t;
+  }
+  
+  public void setShip(Ship ship)
+  {
+      this.ship = ship;
+  }
+  
+  public Ship getShip()
+  {
+      return ship;
   }
 }

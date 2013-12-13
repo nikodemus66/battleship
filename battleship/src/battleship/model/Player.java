@@ -17,7 +17,7 @@ public abstract class Player
 {
   private Grid board = new Grid( 10,10 );
   private ArrayList<Ship> ships = new ArrayList<Ship>( );
-  private int shipCount;
+  protected int shipCount;
 
   public Player( )
   {
