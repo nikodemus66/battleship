@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package battleship.view;
 
 import battleship.controller.Engine;
@@ -14,14 +13,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+
 /**
  *
  * @author Michael Zihlmann
  */
-public class Map extends JPanel implements MouseListener{
-    
+public class Map extends JPanel implements MouseListener {
+
     private int posx;
-    private int posy;   
+    private int posy;
     public static final int MAP_SIZE = 400;
     private MouseListener listener;
     private MouseEvent me;
@@ -30,14 +30,12 @@ public class Map extends JPanel implements MouseListener{
     private Engine engine;
     private Ship ship;
 
+    public Map() {
 
-
-    public Map(){
-        
-        super(new GridLayout(10,10));
+        super(new GridLayout(10, 10));
         setPreferredSize(new Dimension(MAP_SIZE, MAP_SIZE));
         setBorder(BorderFactory.createLineBorder(Color.BLACK, 5));
-        for (int i =0; i<(10*10); i++){
+        for (int i = 0; i < (10 * 10); i++) {
             field = new JPanel();
             field.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
             field.setBackground(Color.BLUE);
@@ -45,53 +43,40 @@ public class Map extends JPanel implements MouseListener{
 
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    int posx = getCoords()[0];
-        int posy = getCoords()[1];
-        paint(posx, posy);
-        System.out.println("Es wurde geklickt..");
+                    posx = 100 + e.getXOnScreen();
+                    posy = 100 + e.getYOnScreen();
+                    paint(posx, posy);
+                    System.out.println("Es wurde geklickt..");
                 }
-
                 @Override
-                public void mousePressed(MouseEvent e) {
-                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                }
-
+                public void mousePressed(MouseEvent e) {}
                 @Override
-                public void mouseReleased(MouseEvent e) {
-                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                }
-
+                public void mouseReleased(MouseEvent e) {}
                 @Override
-                public void mouseEntered(MouseEvent e) {
-                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                }
-
+                public void mouseEntered(MouseEvent e) {}
                 @Override
-                public void mouseExited(MouseEvent e) {
-                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                }
+                public void mouseExited(MouseEvent e) {}
             });
+            field.setVisible(true);
             this.add(field);
-            
-        }
-        
-        
-    }
-    
 
-    public int[] getCoords(){
-        
+        }
+
+    }
+
+    public int[] getCoords() {
+
         listener.mouseClicked(me);
         posy = (int) me.getY();
         posx = (int) me.getX();
-        coords = new int[] {posx, posy};
+        coords = new int[]{posx, posy};
         System.out.println(coords);
-        
+
         return coords;
     }
-    
-    public void paint(int posx, int posy){
-        for (int i =0; i<(10*10); i++){
+
+    public void paint(int posx, int posy) {
+        for (int i = 0; i < (10 * 10); i++) {
             field = new JPanel();
             ship = (Ship) me.getSource();
             field.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
@@ -99,31 +84,25 @@ public class Map extends JPanel implements MouseListener{
             this.add(field);
             getCoords();
             if (engine.placeShip(ship, posx, posy) == true) {
-                field.setBackground(Color.GRAY);                
-            }else if(true == engine.shoot(posx, posy)){
+                field.setBackground(Color.GRAY);
+            } else if (true == engine.shoot(posx, posy)) {
                 field.setBackground(Color.RED);
-            }else if(false == engine.shoot(posx, posy)){
+            } else if (false == engine.shoot(posx, posy)) {
                 field.setBackground(Color.GREEN);
-            }               
-            else{                        
-            field.setBackground(Color.BLUE);
+            } else {
+                field.setBackground(Color.BLUE);
             }
-            
-            
-    }
 
-  
-    
-    
-              
-    
-    }  
+        }
+
+    }
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        int posx = getCoords()[0];
-        int posy = getCoords()[1];
-        paint(posx, posy);
+        posx = 100 + e.getXOnScreen();
+                    posy = 100 + e.getYOnScreen();
+                    paint(posx, posy);
+                    System.out.println("Es wurde geklickt..");
     }
 
     @Override
