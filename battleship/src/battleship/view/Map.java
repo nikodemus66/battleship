@@ -27,6 +27,8 @@ public class Map extends JPanel implements MouseListener{
     private MouseEvent me;
     private int[] coords;
     private JPanel field;
+    private Engine engine;
+    private Ship ship;
 
 
 
@@ -39,7 +41,36 @@ public class Map extends JPanel implements MouseListener{
             field = new JPanel();
             field.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
             field.setBackground(Color.BLUE);
-            field.addMouseListener(listener);
+            field.addMouseListener(new MouseListener() {
+
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    int posx = getCoords()[0];
+        int posy = getCoords()[1];
+        paint(posx, posy);
+        System.out.println("Es wurde geklickt..");
+                }
+
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
+
+                @Override
+                public void mouseReleased(MouseEvent e) {
+                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
+
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
+            });
             this.add(field);
             
         }
@@ -47,49 +78,52 @@ public class Map extends JPanel implements MouseListener{
         
     }
     
-    
+
     public int[] getCoords(){
         
         listener.mouseClicked(me);
-        posy = (int) me.getY() * 100;
-        posx = (int) me.getX() * 100;
-        
-        System.out.println(posy);
+        posy = (int) me.getY();
+        posx = (int) me.getX();
+        coords = new int[] {posx, posy};
+        System.out.println(coords);
         
         return coords;
     }
     
-    public int[] getField(){
-                
-        listener.mouseClicked(me);
-        posy = (int) me.getY() * 100;
-        posx = (int) me.getX() * 100;
-        return coords;
-    }
-    
-    
-    public void paint(){
+    public void paint(int posx, int posy){
         for (int i =0; i<(10*10); i++){
-           
+            field = new JPanel();
+            ship = (Ship) me.getSource();
             field.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-            field.setBackground(Color.BLUE);
-            
+            field.addMouseListener(listener);
             this.add(field);
+            getCoords();
+            if (engine.placeShip(ship, posx, posy) == true) {
+                field.setBackground(Color.GRAY);                
+            }else if(true == engine.shoot(posx, posy)){
+                field.setBackground(Color.RED);
+            }else if(false == engine.shoot(posx, posy)){
+                field.setBackground(Color.GREEN);
+            }               
+            else{                        
+            field.setBackground(Color.BLUE);
+            }
             
             
-        
-        }
-                    
-              
-                
-      
     }
+
+  
+    
+    
+              
+    
+    }  
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        this.getCoords();
-        
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        int posx = getCoords()[0];
+        int posy = getCoords()[1];
+        paint(posx, posy);
     }
 
     @Override
@@ -112,4 +146,3 @@ public class Map extends JPanel implements MouseListener{
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
-    
