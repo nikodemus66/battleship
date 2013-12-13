@@ -180,9 +180,44 @@ public class AIPlayer extends Player
       return (int)(Math.random()*9);
   }
   
-  private boolean ShipDestroyed(int x, int y)
+  private boolean ShipDestroyed(/*Player player,*/ int x, int y)
   {
-      return false;
+    try
+     {
+        int hits = 0;
+        Point pnt = engine.getGridOpponend().getPoint(x, y);
+  //     Point pnt =  player.getGrid().getPoint(x, y);
+        Ship ship = pnt.getShip();
+
+        int i;
+        Point[][] arr = engine.getGridOpponend().getPointArray();
+  //      Point[][] arr = player.getGrid().getPointArray();
+        for( i = 0; i < arr.length; i++ )
+        {
+          for( Point p : arr[i] )
+          {
+            if( p.getType( ) == Point.Type.SHIP )
+            {
+               if (ship == p.getShip() || p.isAttacked())
+               {
+                   hits++;
+               }
+            } 
+          }
+        }
+
+        if (hits == ship.getSize())
+        {
+            return true;
+        }
+        else
+        {
+          return false;
+        }
+    }          
+    catch (Exception e) {
+        return false;
+    }
   }
 }
 
