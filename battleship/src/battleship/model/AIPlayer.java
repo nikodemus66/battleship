@@ -113,13 +113,13 @@ public class AIPlayer extends Player
           if (ShipDestroyed(xShoot, yShoot))
           {
               hasHit = false;
+              actualDirection = getRandomDirection();
+              xShoot = getRandomValue();
+              yShoot = getRandomValue();
           }
           else
           {
               hasHit = true;
-              actualDirection = getRandomDirection();
-              xShoot = getRandomValue();
-              yShoot = getRandomValue();
           }
 //          xHitFirst = xShoot;
 //          yHitFirst = yShoot;
