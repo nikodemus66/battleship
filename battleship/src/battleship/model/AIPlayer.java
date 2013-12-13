@@ -180,6 +180,9 @@ public class AIPlayer extends Player
       return (int)(Math.random()*9);
   }
   
+//  Könnte in die Klasse Engine kopiert und mit der Referenz des Spielers erweitert werden.
+//  Dann könnte man mit dieser Methode überprüfen, ob bei einem Spieler auf gewissen Koordinaten ein Schiff steht,
+//  welches zerstört wurde.
   private boolean ShipDestroyed(/*Player player,*/ int x, int y)
   {
     try
