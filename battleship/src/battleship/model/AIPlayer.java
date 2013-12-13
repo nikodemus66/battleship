@@ -108,7 +108,7 @@ public class AIPlayer extends Player
 //              
 //      }
       
-      while (engine.shoot(xShoot, yShoot))
+      while (engine.shoot(1, xShoot, yShoot))
       {
           if (ShipDestroyed(xShoot, yShoot))
           {
@@ -219,5 +219,10 @@ public class AIPlayer extends Player
         return false;
     }
   }
+
+    @Override
+    public void startingGame() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }
 

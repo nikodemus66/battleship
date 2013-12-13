@@ -73,4 +73,9 @@ public class NetworkPlayer extends Player implements Listener
   public void youWon( )
   {
   }
+
+    @Override
+    public void startingGame() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

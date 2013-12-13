@@ -33,16 +33,16 @@ import javax.swing.*;
 public class GUI2dView extends JFrame implements View {
 
     private Engine engine;
-    
+
     private JFrame frame;
     private JPanel north;
     private JPanel center;
     private JPanel south;
     private JPanel east;
-    
+
     private Map myMap = new Map();
     private Map enemyMap = new Map();
-    
+
     private JButton searchButton;
     private JTextField ipAddressTextField;
     private JButton schlachtschiffButton;
@@ -53,42 +53,36 @@ public class GUI2dView extends JFrame implements View {
     private JLabel kreuzerLabel;
     private JLabel zerstörerLabel;
     private JLabel uBootLabel;
-    
+
     private Ship ship;
     private int schlachtNumb = 1;     //1 x Schlachtschiff: 5 Kästchen
     private int kreuzerNumb = 2;      //2 x Kreuzer : 4 Kästchen
     private int zerstörerNumb = 3  ;  //3 x Zerstörer: 3 Kästchen
     private int uBootNumb = 4;        //4 x U-boot : 2 Kästchen
     private int shipNumb = schlachtNumb + kreuzerNumb + zerstörerNumb + uBootNumb;
-    
+
     /**
      * Initialisiert das erste GUI beim Öffnen der Datei Battleship.exe
      */
-    public GUI2dView(){
-        // JFrame initialisieren
+    public GUI2dView( Engine e ){
         super("Battleship");
+        this.engine = engine;
+        Player one = new HumanPlayer( this );
+        engine.setPlayer( one );
+        // JFrame initialisieren
         setSize(350,400);
         setMinimumSize(new Dimension(350,350));
         // Layout-Manager setzen
         setLayout(new BorderLayout());
         makeInitialFrame();
         setVisible(true);
+
+        do_setup( );
     }
 
-    @Override
-    public void do_setup( Engine engine )
+    public void do_setup( )
     {
-        this.engine = engine;
         engine.setOpponendAI( );
-    }
-
-    /**
-     * starte Spiel wenn alle Spieler bereit sind
-     */
-    @Override
-    public void do_start( )
-    {
-        
     }
 
     @Override
@@ -163,8 +157,8 @@ public class GUI2dView extends JFrame implements View {
                 //alles entfernen
         north.removeAll();
         center.removeAll();
-        south.removeAll();    
-        east = new JPanel(new GridLayout(0,2));        
+        south.removeAll();
+        east = new JPanel(new GridLayout(0,2));
         north.add(new JLabel("Schiffe plazieren"),BorderLayout.NORTH);
         updateShipNumbers();
         //myMap = new Map(...);
@@ -189,29 +183,13 @@ public class GUI2dView extends JFrame implements View {
         east.add(uBootButton);
         uBootLabel = new JLabel("4/4");
         east.add(uBootLabel);
-        
+
         south.add(new JButton("ready"));
         south.add(new JButton("start"));
         add(east, BorderLayout.EAST);
     }
 
-     /**
-     * zuerst wird das Frame aktualisiert.
-     * Danach können die Spieler ihre Schiffe plazieren.
-     */
-    @Override
-    public void do_placeShip(){
-        makeShipPlacingFrame();
-    // wird aufgerufen, wenn spieler Schiff auf Feld plaziert
-//        while(shipNumb!=0){
-//        int[] coords = myMap.getLocation();
-//        if(true == engine.placeShip(ship, x, y)){
-//            myMap.
-//            }
-//        updateShipNumbers();
-//        }
-    }
-    
+
     /**
      * Hier wird das Spielfeld aufgebaut, welches für das eigentliche Spielen
      * verwendet wird.
@@ -234,12 +212,21 @@ public class GUI2dView extends JFrame implements View {
     /**
      * Hier wird der Spieler aufgerufen, das feindliche Feld anzugreifen.
      */
-    @Override
     public void do_shoot(){
         int[] coords = myMap.getCoords();
-        engine.shoot(coords[0], coords[1]);
+        engine.shoot( 0, coords[0], coords[1]);
     }
-    
+
+    @Override
+    public void startingGame() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void yourTurn() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
     /**
      * Dies ist eine Innere Klasse, die als ActionListener für die JButtons
      * verwendet wird.

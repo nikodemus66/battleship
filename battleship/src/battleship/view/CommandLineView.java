@@ -20,14 +20,20 @@ public class CommandLineView implements View
 {
   private Engine engine;
 
-  public CommandLineView( )
+  public CommandLineView( Engine e )
   {
+    this.engine = e;
+
+    Player one = new HumanPlayer( this );
+    engine.setPlayer( one );
+
+    do_setup( );
+    do_start( );
+    do_placeShip( );
   }
 
-  public void do_setup( Engine engine )
+  public void do_setup( )
   {
-    this.engine = engine;
-
     System.out.println( "Possible opponends:" );
     System.out.println( "0: AI" );
     System.out.println( "1: Connect to network player" );
@@ -96,6 +102,13 @@ public class CommandLineView implements View
       }
       draw( );
     }
+    try{
+    engine.playerReady( 0 );
+    }
+    catch( Exception e)
+    {
+        System.out.println( "Error: " + e );
+    }
   }
 
   public void changingPlayer( )
@@ -130,11 +143,10 @@ public class CommandLineView implements View
     String ans = in.nextLine();
     if( "y".equals( ans.toLowerCase( )))
       return true;
-
     return false;
   }
 
-  public void do_shoot( )
+  public void yourTurn( )
   {
     int count = 2;
     System.out.print( "Where do you want to shoot [x y]?: " );
@@ -142,7 +154,7 @@ public class CommandLineView implements View
     int x = in.nextInt();
     int y = in.nextInt();
 
-    if( engine.shoot( x, y ))
+    if( engine.shoot( 0, x, y ))
     {
       // successful
     }
@@ -200,4 +212,11 @@ public class CommandLineView implements View
       System.out.print( "\n" );
     }
   }
+
+    @Override
+    public void startingGame() {
+      System.out.println( "View: got startingGame( )" );
+
+    }
+
 }

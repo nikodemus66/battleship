@@ -15,10 +15,12 @@ import battleship.controller.*;
 
 public interface View
 {
-    void do_start( );
-    void do_setup( Engine engine );
-    void do_placeShip( );
-    void do_shoot( );
+    //void do_start( );
+    //void do_setup( Engine engine );
+    //void do_placeShip( );
+    //void do_shoot( );
+    void startingGame( );
+    void yourTurn( );
     void changingPlayer( );
     void do_update( );
     void youLost( );

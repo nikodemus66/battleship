@@ -18,11 +18,33 @@ public abstract class Player
   private Grid board = new Grid( 10,10 );
   private ArrayList<Ship> ships = new ArrayList<Ship>( );
   protected int shipCount;
+  private boolean ready = false;
+  private boolean shouldShoot = false;
 
   public Player( )
   {
     ships.add( new Ship( "Destroyer", 4 ));
     ships.add( new Ship( "Terminator", 2 ));
+  }
+
+  public void setReady( )
+  {
+    ready = true;
+  }
+
+  public void yourTurn( )
+  {
+    shouldShoot = true;
+  }
+
+  public boolean shouldShoot( )
+  {
+    return shouldShoot;
+  }
+
+  public boolean isReady( )
+  {
+    return ready;
   }
 
   public Grid getGrid( )
@@ -34,22 +56,21 @@ public abstract class Player
   {
     return ships;
   }
-  
+
   public int getShipCount()
   {
       return shipCount;
   }
-  
+
   public void incrementShipCount()
   {
       this.shipCount++;
   }
 
   // engine calls these functions
-  public abstract void do_start( );
-  public abstract void do_setup( Engine engine );
-  public abstract void do_placeShip( );
-  public abstract void do_shoot( );
+
+  //public abstract void do_setup( Engine e );
+  public abstract void startingGame( );
   public abstract void do_update( );
   public abstract void youLost( );
   public abstract void youWon( );

@@ -13,14 +13,17 @@ import java.util.ArrayList;
  */
 public class Engine
 {
+  public static final int MAX_SHIPS = 2;
   public enum PlayerType { HUMAN, AI, NETWORK }
 
   private Player player; // active player
   private Player opponend;
 
-  public static final int MAX_SHIPS = 10;
+  public Engine( )
+  {
+  }
 
-  public Engine( Player one )
+  public void setPlayer( Player one )
   {
     player = one;
   }
@@ -35,7 +38,7 @@ public class Engine
   public boolean setOpponendNetwork( )
   {
     try {
-    opponend = new NetworkPlayer( );
+      opponend = new NetworkPlayer( );
     } catch ( Exception e ) {}
     return true;
   }
@@ -44,9 +47,91 @@ public class Engine
   public boolean setOpponendNetwork( String ip )
   {
     try {
-    opponend = new NetworkPlayer( ip );
+      opponend = new NetworkPlayer( ip );
     } catch ( Exception e ) {}
     return true;
+  }
+
+  public synchronized void playerReady( int playerId ) throws Exception
+  {
+    Player p = getPlayer( playerId );
+    if( p.getShipCount( ) < MAX_SHIPS )
+    {
+      throw new Exception( "Not all ships has been placed" );
+    }
+
+    p.setReady( );
+    notifyAll( );
+
+    try{
+      System.out.println( "Waiting for other player to get ready" );
+      waitForOtherPlayer( );
+    }
+    catch( InterruptedException e )
+    {
+      throw new Exception( "Error: waitForotherPlayer was interrupted: " + e );
+    }
+
+    if( player.isReady( ) ||  opponend.isReady( ))
+      startGame( );
+  }
+
+  private void waitForOtherPlayer( ) throws InterruptedException
+  {
+    while( ! player.isReady( ) ||  ! opponend.isReady( ))
+    {
+      System.out.println( "wait for notify" );
+      wait( );
+      System.out.println( "got Notified" );
+    }
+  }
+
+  private void startGame()
+  {
+    player.startingGame( );
+    opponend.startingGame( );
+    changePlayer( );
+  }
+
+  public boolean shoot(int playerId, int x, int y)
+  {
+    Player p = getPlayer( playerId );
+    if( ! p.shouldShoot( ))
+    {
+      return false; // the player can not shoot if its not his turn
+    }
+
+    // TODO: What happens if shoots at same location as before
+    opponend.getGrid().getPoint(x, y).shot();
+
+    player.do_update( );
+    opponend.do_update( );
+
+    // check if hit
+    // TODO: check if ship sank
+    boolean hit = false;
+    try {
+      if (opponend.getGrid().getPoint(x, y).getType() == Point.Type.SHIP)
+      {
+        Ship s = opponend.getGrid().getPoint(x, y).getShip();
+        //                shipDestroyed(s, x, y);
+        hit = true;
+      }
+      hit = false;
+    }
+    catch (Exception e) { }
+
+    if( isGameover( ))
+    {
+      player.youWon( );
+      opponend.youLost( );
+      return true;
+    }
+
+    if( ! hit )
+      changePlayer( );
+
+    return false;
   }
 
   private void changePlayer( )
@@ -54,51 +139,30 @@ public class Engine
     Player tmp = player;
     player = opponend;
     opponend = tmp;
+    player.yourTurn( );
   }
 
-  public void start() throws Exception
+
+  private Player getPlayer( int playerId )
   {
-    if( player == null && opponend == null )
+    Player p = null;
+    switch( playerId )
     {
-      throw new Exception( "Engine: Players have to be set before start" );
+      case 0:
+        p = player;
+        break;
+      case 1:
+        p = opponend;
+        break;
     }
-
-    // TODO: ask user if he wants to play on network
-    player.do_setup( this );
-    opponend.do_setup( this );
-
-    player.do_start( );
-    opponend.do_start( );
-    startGame( );
+    return p;
   }
 
-  private void startGame()
-  {
-    // TODO: if all players are ready we can start
-    while (player.getShipCount() != 2) // Zum testen nur 2 Schiffe setzen... != MAX_SHIPS
-    {
-      player.do_placeShip( ); // TODO: aslong as the player has ships left, we need to call this function
-    }
-
-    changePlayer( );
-
-    while (player.getShipCount() < MAX_SHIPS)
-    {
-      player.do_placeShip( ); // TODO: aslong as the player has ships left, we need to call this function
-    }
-
-    while( ! gameover( ))
-    {
-      player.do_shoot( ); // TODO: check if shot
-      changePlayer( );
-    }
-  }
-
-  private boolean gameover( )
+  private boolean isGameover( )
   {
     boolean attacked = true;
     int i;
-    Point[][] arr = player.getGrid( ).getPointArray( );
+    Point[][] arr = opponend.getGrid( ).getPointArray( );
     for( i = 0; i < arr.length; i++ )
     {
       for( Point p : arr[i] )
@@ -110,30 +174,8 @@ public class Engine
       }
     }
 
-    if( attacked ) // player lost
+    if( attacked )
     {
-      player.youLost( );
-      opponend.youWon( );
-      return true;
-    }
-
-    attacked = true;
-    arr = opponend.getGrid( ).getPointArray( );
-    for( i = 0; i < arr.length; i++ )
-    {
-      for( Point p : arr[i] )
-      {
-        if( p.getType( ) == Point.Type.SHIP )
-        {
-          attacked &= p.isAttacked( );
-        }
-      }
-    }
-
-    if( attacked ) // player lost
-    {
-      player.youWon( );
-      opponend.youLost( );
       return true;
     }
     return false;
@@ -157,24 +199,6 @@ public class Engine
     return new ArrayList( player.getShips( ));
   }
 
-  public boolean shoot(int x, int y)
-  {
-    // TODO: What happens if shoots at same location as before
-    opponend.getGrid().getPoint(x, y).shot();
-
-    try {
-      if (opponend.getGrid().getPoint(x, y).getType() == Point.Type.SHIP)
-      {
-        Ship s = opponend.getGrid().getPoint(x, y).getShip();
-        //                shipDestroyed(s, x, y);
-        return true;
-      }
-      return false;
-    }
-    catch (Exception e) {
-      return false;
-    }
-  }
 
   public boolean placeShip( Ship ship, int x, int y )
   {

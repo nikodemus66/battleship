@@ -19,14 +19,12 @@ public class Battleship
    */
   public static void main( String[] args ) throws Exception
   {
+    Engine engine = new Engine( ); // controller
+
     View v = null;
     if( args.length > 0 && args[0].equals( "--cli" ))
-      v = new CommandLineView( );
+      v = new CommandLineView( engine );
     else
-      v = new GUI2dView( );
-
-    Player one = new HumanPlayer( v );
-    Engine engine = new Engine( one ); // controller
-    engine.start( );
+      v = new GUI2dView( engine );
   }
 }
