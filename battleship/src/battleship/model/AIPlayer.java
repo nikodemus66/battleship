@@ -196,12 +196,9 @@ public class AIPlayer extends Player
         {
           for( Point p : arr[i] )
           {
-            if( p.getType( ) == Point.Type.SHIP )
+            if( p.getType( ) == Point.Type.SHIP || ship == p.getShip() || p.isAttacked())
             {
-               if (ship == p.getShip() || p.isAttacked())
-               {
-                   hits++;
-               }
+                hits++;
             } 
           }
         }
