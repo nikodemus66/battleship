@@ -4,7 +4,7 @@ package battleship.model;
 import java.net.*;
 import java.io.*;
 
-public class TCPServer
+public class TCPServer implements Runnable
 {
   public final static int PORT = 5001;
 
@@ -46,14 +46,26 @@ public class TCPServer
     in = new BufferedReader( new InputStreamReader( clientSocket.getInputStream()));
 
     send( "Hallo from Server");
+  }
 
-    String message;
-    while ((message = in.readLine()) != null)
-    {
-      listener.receive( message );
-      if (message.equals("Bye."))
-        break;
+  public void start( )
+  {
+    Thread t = new Thread( this );
+    t.start( ); // start listening
+  }
+
+  public void run( )
+  {
+    try {
+      String message;
+      while ((message = in.readLine()) != null)
+      {
+        listener.receive( message );
+        if (message.equals("Bye."))
+          break;
+      }
     }
+    catch ( Exception e ) {}
   }
 
   public void send( String message )

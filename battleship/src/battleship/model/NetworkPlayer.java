@@ -14,14 +14,16 @@ public class NetworkPlayer extends Player implements Listener
 
   public NetworkPlayer( ) throws IOException // I am server
   {
-    server = new TCPServer( this );
+    server = new TCPServer( this ); // overgive as listener
     server.connect( );
+    server.start( ); // start listening
   }
 
   public NetworkPlayer( String ip ) throws IOException // I am client
   {
     client = new TCPClient( this );
     client.connect( ip );
+    client.start( ); // start listening
   }
 
   public void do_setup( Engine engine )

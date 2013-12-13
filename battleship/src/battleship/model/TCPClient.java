@@ -4,7 +4,7 @@ package battleship.model;
 import java.net.*;
 import java.io.*;
 
-public class TCPClient
+public class TCPClient implements Runnable
 {
   private Socket echoSocket = null;
   private PrintWriter out   = null;
@@ -19,7 +19,7 @@ public class TCPClient
 
   public void connect( String server ) throws IOException
   {
-      connect( server, 5001 ); // FIXME: use static variable for port
+    connect( server, 5001 ); // FIXME: use static variable for port
   }
 
   public void connect( String server, int port ) throws IOException
@@ -35,12 +35,24 @@ public class TCPClient
     } catch ( IOException e ) {
       System.err.println( "Couldn't get I/O for " + "the connection to: " + server );
     }
+  }
 
-    String message;
-    while ((message = in.readLine()) != null)
-    {
-      listener.receive( message );
+  public void start( )
+  {
+    Thread t = new Thread( this );
+    t.start( ); // start listening
+  }
+
+  public void run( )
+  {
+    try {
+      String message;
+      while ((message = in.readLine()) != null)
+      {
+        listener.receive( message );
+      }
     }
+    catch ( Exception e ) {}
   }
 
   public void send( String message )
