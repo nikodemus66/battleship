@@ -9,8 +9,10 @@ package battleship.view;
 import battleship.controller.*;
 import battleship.model.*;
 
+import java.util.logging.Logger;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.logging.Level;
 
 /**
  *
@@ -18,18 +20,38 @@ import java.util.Scanner;
  */
 public class CommandLineView implements View
 {
-  private Engine engine;
+  private final static Logger LOGGER = Logger.getLogger("");
+  private HumanPlayer player;
 
-  public CommandLineView( Engine e )
+  public CommandLineView( HumanPlayer p )
   {
-    this.engine = e;
+    this.player = p;
+  }
 
-    Player one = new HumanPlayer( this );
-    engine.setPlayer( one );
-
+  public void do_start( )
+  {
     do_setup( );
-    do_start( );
+    draw( );
     do_placeShip( );
+    try{
+      player.playerReady( );
+    }
+    catch( Exception e)
+    {
+        System.out.println( "Error: " + e );
+    }
+
+    while( !player.isGameover( ))
+    {
+      if( player.isMyTurn( ))
+        do_shoot( );
+      else
+        try {
+            Thread.sleep( 200 );
+      } catch (InterruptedException ex) {
+          LOGGER.severe( "View: sleep got interrupted: " + ex );
+      }
+    }
   }
 
   public void do_setup( )
@@ -47,31 +69,26 @@ public class CommandLineView implements View
     switch( tmp )
     {
       case 0:
-        engine.setOpponendAI( );
+        player.setOpponendAI( );
         break;
       case 1:
         // TODO: read ip and port
         System.out.print( "Enter IP of network player: " );
         String ip = in.next( );
-        engine.setOpponendNetwork( ip );
+        player.setOpponendNetworkClient( ip );
         break;
       case 2:
-        engine.setOpponendNetwork( ); // server
+        player.setOpponendNetworkServer( ); // server
         break;
       default:
         System.out.println( "error: opponend " + tmp + " does not exist" );
     }
   }
 
-  public void do_start( )
-  {
-    draw( );
-  }
-
   public void do_placeShip( )
   {
-    ArrayList<Ship> ships = engine.getShips( );
-    //int count = ships.list
+    LOGGER.info( "View: placing ships" );
+    ArrayList<Ship> ships = player.getShips( );
     int count = ships.size( );
     while ( count > 0 )
     {
@@ -94,20 +111,13 @@ public class CommandLineView implements View
 
       Ship toPlace = ships.get(tmp);
 
-      if( engine.placeShip( toPlace, x, y ))
+      if( player.placeShip( toPlace, x, y ))
       {
         System.out.println( "ship placed: "+ toPlace );
         ships.remove( tmp );
         count--;
       }
       draw( );
-    }
-    try{
-    engine.playerReady( 0 );
-    }
-    catch( Exception e)
-    {
-        System.out.println( "Error: " + e );
     }
   }
 
@@ -123,7 +133,7 @@ public class CommandLineView implements View
     System.out.println( "Gameover: You lost!" );
     if( restart( ))
     {
-      engine.restart( );
+      player.restart( );
     }
   }
 
@@ -132,7 +142,7 @@ public class CommandLineView implements View
     System.out.println( "Gameover: You won!" );
     if( restart( ))
     {
-      engine.restart( );
+      player.restart( );
     }
   }
 
@@ -148,13 +158,17 @@ public class CommandLineView implements View
 
   public void yourTurn( )
   {
+  }
+
+  public void do_shoot( )
+  {
     int count = 2;
     System.out.print( "Where do you want to shoot [x y]?: " );
     Scanner in = new Scanner( System.in );
     int x = in.nextInt();
     int y = in.nextInt();
 
-    if( engine.shoot( 0, x, y ))
+    if( player.shoot( x, y ))
     {
       // successful
     }
@@ -163,16 +177,17 @@ public class CommandLineView implements View
 
   public void do_update( )
   {
+      LOGGER.info( "View: do_update called" );
   }
 
   private void draw( )
   {
     System.out.print( "Opponend's grid:  ================== " );
-    drawBoard( engine.getGridOpponend( ));
+    drawBoard( player.getGridOpponend( ));
 
     System.out.println( );
     System.out.print( "Your grid         ================== " );
-    drawBoard( engine.getGrid( ));
+    drawBoard( player.getGrid( ));
     System.out.println( );
   }
 

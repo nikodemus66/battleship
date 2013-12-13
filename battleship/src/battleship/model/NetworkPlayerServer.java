@@ -6,24 +6,30 @@ import battleship.model.*;
 import battleship.view.*;
 import java.io.IOException;
 
-public class NetworkPlayer extends Player implements Listener
+public class NetworkPlayerServer extends Player implements Listener
 {
   private Engine engine;
   private TCPClient client = null;
   private TCPServer server = null;
 
-  public NetworkPlayer( ) throws IOException // I am server
+  public NetworkPlayerServer( ) // I am server
   {
+
+  }
+  
+  public void init( )
+  {
+      try
+      {
     server = new TCPServer( this ); // overgive as listener
     server.connect( );
     server.start( ); // start listening
-  }
-
-  public NetworkPlayer( String ip ) throws IOException // I am client
-  {
-    client = new TCPClient( this );
-    client.connect( ip );
-    client.start( ); // start listening
+      }
+      catch(Exception e)
+              {
+          System.out.println( "NetworkPlayerServer: init error:" + e );
+                  
+              }
   }
 
   public void do_setup( Engine engine )
@@ -74,6 +80,10 @@ public class NetworkPlayer extends Player implements Listener
   {
   }
 
+  public void yourTurn( )
+  {
+      
+  }
     @Override
     public void startingGame() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

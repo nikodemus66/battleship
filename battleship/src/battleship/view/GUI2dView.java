@@ -32,7 +32,7 @@ import javax.swing.*;
  */
 public class GUI2dView extends JFrame implements View {
 
-    private Engine engine;
+    private HumanPlayer player;
 
     private JFrame frame;
     private JPanel north;
@@ -64,11 +64,13 @@ public class GUI2dView extends JFrame implements View {
     /**
      * Initialisiert das erste GUI beim Öffnen der Datei Battleship.exe
      */
-    public GUI2dView( Engine e ){
+    public GUI2dView( HumanPlayer player ){
         super("Battleship");
-        this.engine = engine;
-        Player one = new HumanPlayer( this );
-        engine.setPlayer( one );
+        this.player = player;
+    }
+    
+    public void do_start()
+    {
         // JFrame initialisieren
         setSize(350,400);
         setMinimumSize(new Dimension(350,350));
@@ -82,7 +84,7 @@ public class GUI2dView extends JFrame implements View {
 
     public void do_setup( )
     {
-        engine.setOpponendAI( );
+        player.setOpponendAI( );
     }
 
     @Override
@@ -214,7 +216,7 @@ public class GUI2dView extends JFrame implements View {
      */
     public void do_shoot(){
         int[] coords = myMap.getCoords();
-        engine.shoot( 0, coords[0], coords[1]);
+        player.shoot( coords[0], coords[1]);
     }
 
     @Override

@@ -15,7 +15,7 @@ import battleship.controller.*;
 
 public interface View
 {
-    //void do_start( );
+    void do_start( );
     //void do_setup( Engine engine );
     //void do_placeShip( );
     //void do_shoot( );

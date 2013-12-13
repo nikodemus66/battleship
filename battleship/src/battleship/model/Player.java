@@ -16,25 +16,25 @@ import java.util.ArrayList;
 public abstract class Player
 {
   private Grid board = new Grid( 10,10 );
-  private ArrayList<Ship> ships = new ArrayList<Ship>( );
-  protected int shipCount;
+  protected int shipCount = 0;
   private boolean ready = false;
   private boolean shouldShoot = false;
+  protected Engine engine;
 
   public Player( )
   {
-    ships.add( new Ship( "Destroyer", 4 ));
-    ships.add( new Ship( "Terminator", 2 ));
   }
+
+  public void init( Engine e )
+  {
+    engine = e;
+    init( );
+  }
+
 
   public void setReady( )
   {
     ready = true;
-  }
-
-  public void yourTurn( )
-  {
-    shouldShoot = true;
   }
 
   public boolean shouldShoot( )
@@ -52,11 +52,6 @@ public abstract class Player
     return board;
   }
 
-  public ArrayList<Ship> getShips( )
-  {
-    return ships;
-  }
-
   public int getShipCount()
   {
       return shipCount;
@@ -70,8 +65,10 @@ public abstract class Player
   // engine calls these functions
 
   //public abstract void do_setup( Engine e );
+  public abstract void init( );
   public abstract void startingGame( );
   public abstract void do_update( );
+  public abstract void yourTurn( );
   public abstract void youLost( );
   public abstract void youWon( );
 }

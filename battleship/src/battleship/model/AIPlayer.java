@@ -3,81 +3,83 @@ package battleship.model;
 
 import battleship.*;
 import battleship.controller.*;
-//import battleship.view.*;
+import java.util.ArrayList;
 
-public class AIPlayer extends Player
+import java.util.logging.Logger;
+
+public class AIPlayer extends Player implements Runnable
 {
-  private Engine engine;
+  private final static Logger LOGGER = Logger.getGlobal();
   private int xShoot, yShoot; //xHitFirst, yHitFirst;
   private boolean hasHit;
   private Ship.Direction actualDirection;
   private boolean sign;
-  
+  private Thread thread;
+
   public AIPlayer( )
   {
-//      xHitFirst = 99;
-//      yHitFirst = 99;
-      xShoot = 0;
-      yShoot = 0;
-      sign = false;
+    LOGGER.info( this + ":AIPlayer:Constructor" );
   }
 
-  public void do_setup( Engine engine )
+  public void init( )
   {
-    this.engine = engine;
+    LOGGER.info( this + ":AIPlayer:init" );
+    thread = new Thread( this );
+    thread.start( );
   }
 
-  public void do_start( )
+  public void run( )
   {
+    LOGGER.info( this + ":AIPlayer:run" );
+    engine.getGrid( this );
+    xShoot = 0;
+    yShoot = 0;
+    sign = false;
+
+    do_placeShip( );
+    try{
+    engine.playerReady( this );
+    }
+    catch( Exception ex)
+    {
+        ex.printStackTrace();
+    }
   }
 
-  public void do_placeShip( )
+  private void do_placeShip( )
   {
-        System.out.println( "AI: placeShip( )" );
-    
-        if (this.shipCount == 0)
+    LOGGER.info( this + ":AIPlayer:do_placeShip" );
+      LOGGER.info( "AI: placeShip( )" );
+      ArrayList<Ship> ships = engine.getShips( );
+      for( Ship s : ships )
+      {
+          int x = getRandomValue( );
+          int y = getRandomValue( );
+        if( engine.placeShip( this, s, x, y))
         {
-//          1 Schlachtschiff 5 Felder
-            while (engine.placeShip( new Ship( "Battleship", 5, getRandomDirection()), getRandomValue(), getRandomValue()) == false)
-            {
-
-            }
-
-//          2 Kreuzer 4 Felder
-            for(int i=0; i<2; i++)
-            {
-                while (engine.placeShip( new Ship( "Cruiser", 4, getRandomDirection()), getRandomValue(), getRandomValue()) == false)
-                {
-
-                }
-            }
-
-//          3 Zerstörer 3 Felder
-            for(int i=0; i<3; i++)
-            {
-                while (engine.placeShip( new Ship( "Destroyer", 3, getRandomDirection()), getRandomValue(), getRandomValue()) == false)
-                {
-
-                }            
-            }
-
-//          4 U-Boote 2 Felder
-            for(int i=0; i<4; i++)
-            {
-                while (engine.placeShip( new Ship( "Submarine", 2, getRandomDirection()), getRandomValue(), getRandomValue()) == false)
-                {
-
-                }            
-            }            
+            LOGGER.info( "ship placed at [" + x + "," + y + "]: "+ s );
         }
+        else
+        {
+            LOGGER.info( "AI: could not place ship at [" + x + "," + y + "]: " + s );
+        }
+      }
+  }
+
+  public void yourTurn( )
+  {
+    LOGGER.info( this + ":AIPlayer:yourTurn" );
+    do_shoot( );
   }
 
   public void changingPlayer( )
   {
+    LOGGER.info( this + ":AIPlayer:chaningPlayer" );
   }
 
-  public void do_shoot( )
-  {      
+  private void do_shoot( )
+  {
+    LOGGER.info( this + ":AIPlayer:do_shoot" );
       if (hasHit == false)
       {
           actualDirection = getRandomDirection();
@@ -87,7 +89,7 @@ public class AIPlayer extends Player
       else
       {
           hasHit = false;
-          
+
           if (sign = false)
           {
               sign = true;
@@ -97,18 +99,18 @@ public class AIPlayer extends Player
               sign = false;
           }
       }
-      
+
 //      if(xHitFirst != 99)
 //      {
-//              
+//
 //      }
-//          
+//
 //      if(xHitFirst != 99)
 //      {
-//              
+//
 //      }
-      
-      while (engine.shoot(1, xShoot, yShoot))
+
+      while (engine.shoot(this, xShoot, yShoot))
       {
           if (ShipDestroyed(xShoot, yShoot))
           {
@@ -123,8 +125,8 @@ public class AIPlayer extends Player
           }
 //          xHitFirst = xShoot;
 //          yHitFirst = yShoot;
-          
-          
+
+
           switch(actualDirection){
               case HORIZONTAL:
                   if (sign == true)
@@ -135,9 +137,9 @@ public class AIPlayer extends Player
                   {
                       xShoot--;
                   }
-                  
+
                   break;
-                  
+
               case VERTICAL:
                   if (sign == true)
                   {
@@ -154,32 +156,35 @@ public class AIPlayer extends Player
 
   public void do_update( )
   {
+    LOGGER.info( this + ":AIPlayer:do_update" );
   }
 
   public void youLost( )
   {
+    LOGGER.info( this + ":AIPlayer:youLost" );
   }
 
   public void youWon( )
   {
+    LOGGER.info( this + ":AIPlayer:youWon" );
   }
-  
+
   private Ship.Direction getRandomDirection()
   {
       int i = (int)(Math.random()*2);
       switch (i){
           case 0:
-              return Ship.Direction.VERTICAL;              
+              return Ship.Direction.VERTICAL;
           default:
               return Ship.Direction.HORIZONTAL;
       }
   }
-  
+
   private int getRandomValue()
   {
-      return (int)(Math.random()*9);
+      return (int)(Math.random()*8); // FIXME: use static member for field size
   }
-  
+
 //  Könnte in die Klasse Engine kopiert und mit der Referenz des Spielers erweitert werden.
 //  Dann könnte man mit dieser Methode überprüfen, ob bei einem Spieler auf gewissen Koordinaten ein Schiff steht,
 //  welches zerstört wurde.
@@ -202,7 +207,7 @@ public class AIPlayer extends Player
             if( p.getType( ) == Point.Type.SHIP || ship == p.getShip() || p.isAttacked())
             {
                 hits++;
-            } 
+            }
           }
         }
 
@@ -214,15 +219,15 @@ public class AIPlayer extends Player
         {
           return false;
         }
-    }          
+    }
     catch (Exception e) {
         return false;
     }
   }
 
-    @Override
-    public void startingGame() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+  public void startingGame() {
+    LOGGER.info( this + ":AIPlayer:startingGame" );
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
 }
 
