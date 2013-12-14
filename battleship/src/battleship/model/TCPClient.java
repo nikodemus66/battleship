@@ -3,16 +3,17 @@ package battleship.model;
 
 import java.net.*;
 import java.io.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class TCPClient implements Runnable
 {
   private Socket echoSocket = null;
-  private PrintWriter out   = null;
   private BufferedReader in = null;
 
-  private Listener listener;
+  private final IClientListener listener;
 
-  public TCPClient( Listener l )
+  public TCPClient( IClientListener l )
   {
     listener = l;
   }
@@ -24,11 +25,10 @@ public class TCPClient implements Runnable
 
   public void connect( String server, int port ) throws IOException
   {
-    System.out.println ("Attemping to connect to host " + server + " on port " + port );
+    Logger.getGlobal( ).info ("Connect to host " + server + " on port " + port );
 
     try {
       echoSocket = new Socket( server, port );
-      out = new PrintWriter( echoSocket.getOutputStream( ), true );
       in = new BufferedReader( new InputStreamReader( echoSocket.getInputStream( )));
     } catch (UnknownHostException e) {
       System.err.println( "Don't know about host: " + server );
@@ -43,26 +43,69 @@ public class TCPClient implements Runnable
     t.start( ); // start listening
   }
 
+  @Override
   public void run( )
   {
+    BufferedInputStream bis = null;
     try {
-      String message;
-      while ((message = in.readLine()) != null)
-      {
-        listener.receive( message );
-      }
+      bis = new BufferedInputStream(echoSocket.getInputStream());
+    } catch (IOException ex) {
+      Logger.getLogger(TCPClient.class.getName()).log(Level.SEVERE, null, ex);
     }
-    catch ( Exception e ) {}
+
+    while (true)
+    {
+      byte[] data = new byte[8];
+      int bytesRead = 0;
+      try {
+        bytesRead = bis.read(data);
+      } catch (IOException ex) {
+        Logger.getLogger(TCPClient.class.getName()).log(Level.SEVERE, null, ex);
+      }
+      if( bytesRead != data.length )
+      {
+        Logger.getGlobal().log( Level.SEVERE, "TCPClient: short read {0}/{1}", new Object[]{bytesRead, data.length});
+        continue;
+      }
+      final Message m = Message.createMessage(data);
+      if( m == null )
+        continue;
+
+      data = new byte[m.getPayloadSize()];
+      try {
+        bytesRead = bis.read(data);
+      } catch (IOException ex) {
+        Logger.getLogger(TCPClient.class.getName()).log(Level.SEVERE, null, ex);
+      }
+      if( bytesRead != data.length )
+      {
+        Logger.getGlobal().log( Level.SEVERE, "TCPClient: short read {0}/{1}", new Object[]{bytesRead, data.length});
+        continue;
+      }
+      m.setPayload(data );
+
+      new Thread( new Runnable( ){
+          @Override
+          public void run()
+          {
+            listener.receive( m );
+          }
+      }).start();
+    }
   }
 
-  public void send( String message )
+  public void send( Message m )
   {
-    out.println( message );
+    try {
+      //Logger.getGlobal().info( "TCPClient: sending " + m.getByteArray( ).length );
+      echoSocket.getOutputStream().write(m.getByteArray( ));
+    } catch (IOException ex) {
+      Logger.getLogger(TCPClient.class.getName()).log(Level.SEVERE, null, ex);
+    }
   }
 
   public void disconnect( ) throws IOException
   {
-    out.close();
     in.close();
     echoSocket.close();
   }

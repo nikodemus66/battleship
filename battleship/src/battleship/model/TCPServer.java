@@ -3,23 +3,23 @@ package battleship.model;
 
 import java.net.*;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class TCPServer implements Runnable
 {
   public final static int PORT = 5001;
 
   private ServerSocket serverSocket = null;
-  private Socket clientSocket = null;
-  private PrintWriter out   = null;
-  private BufferedReader in = null;
-  private Listener listener = null;
+  private IServerListener listener = null;
 
-  public TCPServer( Listener l ) throws IOException
+  public TCPServer( IServerListener l ) throws IOException
   {
     listener = l;
   }
 
-  public void connect( ) throws IOException
+  public void bind( ) throws IOException
   {
     try {
       serverSocket = new ServerSocket( PORT );
@@ -28,24 +28,6 @@ public class TCPServer implements Runnable
     {
       System.err.println("Could not listen on port: " + PORT);
     }
-
-    System.out.println ("Waiting for connection.....");
-
-    try {
-      clientSocket = serverSocket.accept();
-    }
-    catch (IOException e)
-    {
-      System.err.println("Accept failed.");
-    }
-
-    System.out.println ("Connection successful");
-    System.out.println ("Waiting for input.....");
-
-    out = new PrintWriter(clientSocket.getOutputStream(), true);
-    in = new BufferedReader( new InputStreamReader( clientSocket.getInputStream()));
-
-    send( "Hallo from Server");
   }
 
   public void start( )
@@ -54,30 +36,29 @@ public class TCPServer implements Runnable
     t.start( ); // start listening
   }
 
+
+  @Override
   public void run( )
   {
-    try {
-      String message;
-      while ((message = in.readLine()) != null)
+    Logger.getGlobal( ).info ("Waiting for connection ...");
+    while( true )
+    {
+      try {
+        Socket clientSocket = serverSocket.accept();
+        ClientConnection cc = new ClientConnection( clientSocket, listener );
+        cc.start( );
+        Logger.getGlobal( ).info ("Connection successful");
+        listener.newConnection( cc );
+      }
+      catch (IOException e)
       {
-        listener.receive( message );
-        if (message.equals("Bye."))
-          break;
+        System.err.println("Accept failed.");
       }
     }
-    catch ( Exception e ) {}
-  }
-
-  public void send( String message )
-  {
-    out.println( message );
   }
 
   public void disconnect( ) throws IOException
   {
-    out.close();
-    in.close();
-    clientSocket.close();
     serverSocket.close();
   }
 }

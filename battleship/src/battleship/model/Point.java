@@ -12,43 +12,50 @@ package battleship.model;
  */
 public class Point
 {
-  public enum Type { WATER, SHIP }
-  private Type type;
   private boolean attacked = false;
+  private ShootState state;
   private Ship ship;
 
-  public Point( Type t )
+  public Point( )
   {
-    type = t;
+    state = ShootState.WATER;
+    ship = null;
   }
 
-  public void shot( )
+  public void setShip( Ship s )
   {
-    attacked = true;
+    state = ShootState.SHIP;
+    ship = s;
   }
 
-  public boolean isAttacked( )
+  public Ship getShip( )
   {
-    return attacked;
+    return ship;
   }
 
-  public Type getType( )
+  public boolean shoot( )
   {
-    return type;
+    if( attacked )
+      return false;
+
+    switch( state )
+    {
+      case SHIP:
+        ship.hit( );
+        if( !ship.isAlive( ))
+          state = ShootState.HIT_SUNKEN;
+        else
+          state = ShootState.HIT;
+        return true;
+      case WATER:
+        state = ShootState.MISS;
+        return true;
+    }
+    return false;
   }
 
-  public void setType( Type t )
+  public ShootState getState( )
   {
-    type = t;
-  }
-  
-  public void setShip(Ship ship)
-  {
-      this.ship = ship;
-  }
-  
-  public Ship getShip()
-  {
-      return ship;
+    return state;
   }
 }

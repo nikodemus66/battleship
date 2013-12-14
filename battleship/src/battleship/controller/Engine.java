@@ -5,301 +5,370 @@
 package battleship.controller;
 
 import battleship.model.*;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  *
  * @author nikodemus
  */
-public class Engine
+public class Engine implements Runnable, IServerListener
 {
-  private final static Logger LOGGER = Logger.getGlobal();
-  //public final static enum EngineState { SELECTING_OPPONEND, PREPARING_GRID, PLAY, FINISHED }
+  private boolean up = false;
+  private Thread thread;
 
-  //private EngineState state = EngineState.SELECTING_OPPONEND;
+  private EngineState state;
 
-  public static final int MAX_SHIPS = 2;
-  private static final ArrayList<Ship> ships = new ArrayList<Ship>() {{ // TODO: use array
-    add(new Ship( "Killer", 2));
-    add(new Ship( "Terminator" , 4));
-  }};
+  private TCPServer server;
 
-  private Player[] players = new Player[2];
-  private int activePlayer = 0;
-
-  public Engine( )
-  {
-    LOGGER.info( this + ":Engine:Constructor" );
+  public Engine() {
+    this.state = EngineState.SELECTING_OPPONEND;
   }
 
-  public void setPlayer( Player one )
+  public void start( )
   {
-    LOGGER.info( this + ":Engine:setPlayer" );
-    players[0] = one;
-    one.init( this );
-  }
+    if( up )
+      return;
 
-  public boolean setOpponendAI( )
-  {
-    LOGGER.info( this + ":Engine:setOponendAI" );
-    players[1] = new AIPlayer( );
-    players[1].init( this );
-    return true;
-  }
-
-  // server
-  public boolean setOpponendNetworkServer( )
-  {
-    LOGGER.info( this + ":Engine:setOponendNetworkServer" );
     try {
-      players[1] = new NetworkPlayerServer( );
-      players[1].init( this );
-    } catch ( Exception e ) {}
-    return true;
+      server = new TCPServer( this ); // overgive as listener
+      server.bind();
+    } catch (IOException ex) {
+      Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);
+      Logger.getGlobal( ).info( "Engine: error:" + ex );
+    }
+
+    up = true;
+    thread = new Thread( this );
+    thread.start( );
   }
 
-  // client
-  public boolean setOpponendNetworkClient( String ip )
+  public void stop( )
   {
-    LOGGER.info( this + ":Engine:setOponendNetworkClient" );
+    up = false;
     try {
-      players[1] = new NetworkPlayerClient( ip );
-      players[1].init( this );
-    } catch ( Exception e ) {}
-    return true;
-  }
-
-  public synchronized void playerReady( Player player ) throws Exception // waits until game starts
-  {
-    LOGGER.info( this + ":Engine:playerReady: " + player );
-    if( player.getShipCount( ) < MAX_SHIPS )
-    {
-      throw new Exception( "Not all ships has been placed" );
-    }
-
-    if( players[0] == null )
-      LOGGER.info( "Engine: XXXXXXXXXXX player null: 0" );
-
-    if( players[1] == null )
-      LOGGER.info( "Engine: XXXXXXXXXXX player null: 0" );
-
-
-    player.setReady( );
-    if( players[0].isReady( ) &&  players[1].isReady( ))
-    {
-      LOGGER.info( "Engine: all players are ready" );
-      notifyAll( );
-      startGame( );
-    }
-    else
-    {
-      try{
-        LOGGER.info( "Waiting for other player to get ready" );
-        waitForOtherPlayer( );
-      }
-      catch( InterruptedException e )
-      {
-        throw new Exception( "Error: waitForotherPlayer was interrupted: " + e );
-      }
+      thread.join( );
+    } catch (InterruptedException ex) {
+      Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);
     }
   }
 
-  private void waitForOtherPlayer( ) throws InterruptedException
+
+  @Override
+  public void run( )
   {
-    while( ! players[0].isReady( ) ||  ! players[1].isReady( ))
+    server.start( );
+  }
+
+
+  private PlayerInformation[] players = new PlayerInformation[2];
+
+  @Override
+  public void newConnection( ClientConnection client )
+  {
+    Logger.getGlobal( ).info( "Engine: got new connection ");
+  }
+
+  @Override
+  public void receive( ClientConnection client, Message message )
+  {
+    Logger.getGlobal( ).info( "Engine: got message: " + message.getType().toString( ) + " | " + message.printMessage( ));
+    PlayerInformation player = getPlayerInformation( client );
+    switch( message.getType( ))
     {
-      LOGGER.info( "wait for notify" );
-      wait( );
-      LOGGER.info( "got Notified" );
+      case REGISTER:
+        String name = "";
+        try {
+          DataInputStream payload =  message.getPayloadReader( );
+          int length = payload.readUnsignedByte();
+          byte[]tmp = new byte[length];
+          payload.read(tmp);
+          name = new String(tmp, "UTF-8");
+        } catch (IOException ex) {
+          Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+
+        // TODO: synchronized block, registering player
+        synchronized( players )
+        {
+          Logger.getGlobal( ).info( "Engine: registering player " + name + ": " + message.getConnection( ) );
+          if( players[0] == null )
+          {
+            players[0] = new PlayerInformation( name, message.getConnection(), client);
+
+          }
+          else if( players[1] == null )
+          {
+            players[1] = new PlayerInformation( name, message.getConnection(), client);
+            state = EngineState.PREPARING_GRID;
+
+            Message m = new Message( MessageType.STATE_CHANGE);
+            try {
+              ByteArrayOutputStream baos = new ByteArrayOutputStream( );
+              DataOutputStream payload = new DataOutputStream( baos );
+
+              payload.writeByte( state.ordinal( ));
+              m.setPayload(baos.toByteArray( ));
+
+              players[0].getClient().send(m);
+              players[1].getClient().send(m);
+
+            } catch (IOException ex) {
+              Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);
+            }
+          }
+          else
+          {
+            // refuse connection and close it
+            client.close();
+          }
+        }
+        //
+        break;
+      case PLACE_SHIP:
+        {
+          if( state != EngineState.PREPARING_GRID )
+          {
+            Logger.getGlobal( ).info( "Engine: player " + player.getName() + " cannot place ship, engine state is: " + state.name( ));
+            return;
+          }
+
+          boolean success = false;
+          try {
+            DataInputStream payload =  message.getPayloadReader( );
+            ShipType shipType = ShipType.values()[payload.readUnsignedByte()];
+            int x = payload.readUnsignedByte();
+            int y = payload.readUnsignedByte();
+            boolean vertical = payload.readBoolean();
+
+            if( player.getGrid( ).placeShip( shipType, x, y, vertical ))
+            {
+              Logger.getGlobal( ).info( "Engine: player " + player.getName() + " placed ship at " + x + " " + y );
+              //sendGood;
+              success = true;
+            }
+            else
+            {
+              Logger.getGlobal( ).info( "Engine: player " + player.getName() + " cannot place ship at " + x + " " + y );
+              //sendError;
+              success = false;
+            }
+
+
+          } catch (IOException ex) {
+            Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);
+          }
+
+          // send PLACE_SHIP_RESPONSE
+          Message m = new Message( MessageType.PLACE_SHIP_RESPONSE);
+          try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream( );
+            DataOutputStream payload = new DataOutputStream( baos );
+
+            payload.writeBoolean( success );
+            m.setPayload(baos.toByteArray( ));
+
+            player.getClient().send(m);
+
+          } catch (IOException ex) {
+            Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);
+          }
+        }
+        break;
+      case PLAYER_READY:
+        {
+          if( state != EngineState.PREPARING_GRID)
+            return;
+
+          player.setReady();
+          if( !players[0].isReady( ) || !players[1].isReady( ))
+          {
+            return;
+          }
+
+          // send STATE PLAY
+          state = EngineState.PLAY;
+          Message m = new Message( MessageType.STATE_CHANGE);
+          try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream( );
+            DataOutputStream payload = new DataOutputStream( baos );
+
+            payload.writeByte( state.ordinal( ));
+            m.setPayload(baos.toByteArray( ));
+
+            players[0].getClient().send(m);
+            players[1].getClient().send(m);
+
+          } catch (IOException ex) {
+            Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);
+          }
+
+          // send TURN
+          sendTurn( player );
+
+        }
+        break;
+      case SHOOT:
+        {
+          synchronized( this )
+          {
+            boolean success = false;
+            ShootState shot = ShootState.NOT_POSSIBLE;
+            int x = 0;
+            int y = 0;
+            PlayerInformation opponend = getOpponend(player);
+
+            if( state == EngineState.PLAY && player.getState( ) == EngineState.YOUR_TURN )
+            {
+              try {
+                DataInputStream payload =  message.getPayloadReader( );
+                x = payload.readUnsignedByte();
+                y = payload.readUnsignedByte();
+
+
+                shot = opponend.getGrid( ).shoot( x, y );
+                Logger.getGlobal( ).info( "Engine: player " + player.getName() + " shot at " + x + " " + y + " and got " + shot.name( ));
+                success = true;
+
+              } catch (IOException ex) {
+                Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);
+                success = false;
+              }
+            }
+
+            // inform other opponend
+            if( success )
+            {
+              Message m = new Message( MessageType.OPPONEND_SHOOT );
+              try {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream( );
+                DataOutputStream payload = new DataOutputStream( baos );
+
+                payload.writeByte( x );
+                payload.writeByte( y );
+                payload.writeByte( shot.ordinal( ));
+
+                m.setPayload(baos.toByteArray( ));
+                opponend.getClient().send(m);
+
+              } catch (IOException ex) {
+                Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);
+              }
+            }
+
+            // send SHOOT_RESPONSE
+            Message m = new Message( MessageType.SHOOT_RESPONSE );
+            try {
+              ByteArrayOutputStream baos = new ByteArrayOutputStream( );
+              DataOutputStream payload = new DataOutputStream( baos );
+
+              payload.writeBoolean( success );
+              payload.writeByte( shot.ordinal( ));
+              m.setPayload(baos.toByteArray( ));
+
+              player.getClient().send(m);
+
+            } catch (IOException ex) {
+              Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            // check if gameover
+            if( opponend.getGrid().allShipDead( ))
+            {
+              m = new Message( MessageType.STATE_CHANGE );
+              try {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream( );
+                DataOutputStream payload = new DataOutputStream( baos );
+
+                // send player
+                payload.writeByte( EngineState.YOU_WON.ordinal( ));
+                m.setPayload(baos.toByteArray( ));
+                player.getClient().send( m );
+
+                baos.reset();
+
+                // send opponend
+                payload.writeByte( EngineState.YOU_LOST.ordinal( ));
+                m.setPayload(baos.toByteArray( ));
+                opponend.getClient().send( m );
+
+              } catch (IOException ex) {
+                Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);
+              }
+
+              state = EngineState.FINISHED;
+            }
+            else
+            {
+              // if missed then change turn
+              if( shot == ShootState.MISS )
+                sendTurn( opponend );
+              else
+                sendTurn(player);
+            }
+          }
+        }
+        break;
+      case RESTART:
+        break;
+      default:
+        Logger.getGlobal( ).info( "Engine: got unknown message: " + message  );
     }
   }
 
-  private void startGame()
+  private void sendTurn( PlayerInformation player )
   {
-    LOGGER.info( this + ":Engine:startGame" );
-    players[0].startingGame( );
-    players[1].startingGame( );
-    activePlayer = 0;
-    players[activePlayer].yourTurn( );
+    PlayerInformation opponend = getOpponend(player);
+
+    opponend.setState( EngineState.OPPONENDS_TURN);
+    player.setState( EngineState.YOUR_TURN);
+
+    Message m = new Message( MessageType.STATE_CHANGE);
+    try {
+      ByteArrayOutputStream baos = new ByteArrayOutputStream( );
+      DataOutputStream payload = new DataOutputStream( baos );
+
+      // send opponend
+      payload.writeByte( EngineState.OPPONENDS_TURN.ordinal( ));
+      m.setPayload(baos.toByteArray( ));
+      opponend.getClient().send(m);
+
+      baos.reset();
+
+      // send player
+      payload.writeByte( EngineState.YOUR_TURN.ordinal( ));
+      m.setPayload(baos.toByteArray( ));
+      player.getClient().send(m);
+
+    } catch (IOException ex) {
+      Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);
+    }
   }
 
-  private Player getOpponend( )
+  private PlayerInformation getPlayerInformation( ClientConnection cc )
   {
-    LOGGER.info( this + ":Engine:getOpponend" );
-    if( activePlayer == 0 )
+    if( players[0] != null && players[0].getClient() == cc )
+    {
+      return players[0];
+    }
+    else if( players[1] != null && players[1].getClient() == cc )
+    {
+      return players[1];
+    }
+    return null;
+  }
+
+  private PlayerInformation getOpponend( PlayerInformation p )
+  {
+    if( players[0] == p )
       return players[1];
     else
       return players[0];
   }
-
-  public boolean shoot( Player player, int x, int y)
-  {
-    LOGGER.info( this + ":Engine:shoot" );
-    if( player != players[activePlayer] )
-    {
-      LOGGER.info( "Engine:shoot: error cannot shoot, its up to player: " + activePlayer );
-      return false; // the player can not shoot if its not his turn
-    }
-
-    // TODO: What happens if shoots at same location as before
-    Player opponend = getOpponend( );
-    opponend.getGrid().getPoint(x, y).shot();
-
-    player.do_update( );
-    opponend.do_update( );
-
-    // check if hit
-    // TODO: check if ship sank
-    boolean hit = false;
-    try {
-      if (opponend.getGrid().getPoint(x, y).getType() == Point.Type.SHIP)
-      {
-        Ship s = opponend.getGrid().getPoint(x, y).getShip();
-        //                shipDestroyed(s, x, y);
-        hit = true;
-      }
-      hit = false;
-    }
-    catch (Exception e) { }
-
-    if( isGameover( ))
-    {
-      player.youWon( );
-      opponend.youLost( );
-      return true;
-    }
-
-    if( ! hit )
-      changePlayer( );
-
-    return false;
-  }
-
-  private void changePlayer( )
-  {
-    LOGGER.info( this + ":Engine:changePlayer" );
-    if( activePlayer == 0 )
-      activePlayer = 1;
-    else
-      activePlayer = 0;
-    players[activePlayer].yourTurn( );
-  }
-
-  public boolean isMyTurn( Player p )
-  {
-    LOGGER.info( this + ":Engine:isMyTurn" );
-    return players[activePlayer] == p;
-  }
-
-  public boolean isGameover( ) // TODO: check if over in Grid
-  {
-    LOGGER.info( this + ":Engine:isGameover" );
-    Player player = null;
-    if ( activePlayer == 0 )
-      player = players[1];
-    else
-      player = players[0];
-
-    boolean attacked = true;
-    int i;
-    Point[][] arr = player.getGrid( ).getPointArray( );
-    for( i = 0; i < arr.length; i++ )
-    {
-      for( Point p : arr[i] )
-      {
-        if( p.getType( ) == Point.Type.SHIP )
-        {
-          attacked &= p.isAttacked( );
-        }
-      }
-    }
-
-    if( attacked )
-    {
-      return true;
-    }
-    return false;
-  }
-
-  public Grid getGrid( Player player )
-  {
-    LOGGER.info( this + ":Engine:getGrid" );
-    // TODO: return copy
-    if( players[0] == player)
-      return players[0].getGrid( );
-    else
-      return players[1].getGrid( );
-  }
-
-  public Grid getGridOpponend( Player player )
-  {
-    LOGGER.info( this + ":Engine:getGridOpponend" );
-    // TODO: return copy
-
-    if( players[0] == player)
-      return players[1].getGrid( );
-    else
-      return players[0].getGrid( );
-  }
-
-  public ArrayList<Ship> getShips( )
-  {
-    LOGGER.info( this + ":Engine:getShips" );
-    // return copy
-    return new ArrayList<Ship>( ships );
-  }
-
-
-  public boolean placeShip( Player player, Ship ship, int x, int y ) // TODO: overgive shipId not whole ship
-  {
-    LOGGER.info( this + ":Engine:placeShip" );
-    Point points[] = new Point[ship.getSize()];
-
-    for( int i=0; i < ship.getSize( ); i++ )
-    {
-      Point p = null;
-
-      try {
-        switch( ship.getDirection( ))
-        {
-          case HORIZONTAL:
-            p = player.getGrid( ).getPoint( x+i, y );
-            break;
-          case VERTICAL:
-            p = player.getGrid( ).getPoint( x, y+i );
-            break;
-        }
-      } catch (Exception e) {
-        LOGGER.info( "Eninge: error ship cannot be placed: " + e );
-        return false;
-      }
-
-      if( p.getType() == Point.Type.SHIP )
-      {
-        LOGGER.info( "Eninge: error ship cannot be placed: it collides with another ship" );
-        return false; // cannot place ship because of other ship
-      }
-      points[i] = p;
-    }
-
-    for (Point p : points)
-    {
-      p.setType( Point.Type.SHIP );
-      p.setShip(ship);
-    }
-
-    player.incrementShipCount();
-    player.do_update();
-    return true;
-  }
-
-  public void restart( )
-  {
-    LOGGER.info( this + ":Engine:restart" );
-    players[0].getGrid( ).clear( );
-    players[1].getGrid( ).clear( );
-    startGame( );
-  }
-
 }
