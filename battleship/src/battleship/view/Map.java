@@ -27,7 +27,7 @@ public class Map extends JPanel implements MouseListener {
     private MouseEvent me;
     private int[] coords;
     private JPanel field;
-    private Engine engine;
+    private HumanPlayer player;
     private Ship ship;
 
     public Map() {
@@ -83,11 +83,11 @@ public class Map extends JPanel implements MouseListener {
             field.addMouseListener(listener);
             this.add(field);
             getCoords();
-            if (engine.placeShip(ship, posx, posy) == true) {
+            if (player.placeShip(ship, posx, posy) == true) {
                 field.setBackground(Color.GRAY);
-            } else if (true == engine.shoot(posx, posy)) {
+            } else if (true == player.shoot(posx, posy)) {
                 field.setBackground(Color.RED);
-            } else if (false == engine.shoot(posx, posy)) {
+            } else if (false == player.shoot(posx, posy)) {
                 field.setBackground(Color.GREEN);
             } else {
                 field.setBackground(Color.BLUE);

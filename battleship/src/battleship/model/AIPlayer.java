@@ -193,12 +193,12 @@ public class AIPlayer extends Player implements Runnable
     try
      {
         int hits = 0;
-        Point pnt = engine.getGridOpponend().getPoint(x, y);
+        Point pnt = engine.getGridOpponend( this ).getPoint(x, y);
   //     Point pnt =  player.getGrid().getPoint(x, y);
         Ship ship = pnt.getShip();
 
         int i;
-        Point[][] arr = engine.getGridOpponend().getPointArray();
+        Point[][] arr = engine.getGridOpponend(this ).getPointArray();
   //      Point[][] arr = player.getGrid().getPointArray();
         for( i = 0; i < arr.length; i++ )
         {
