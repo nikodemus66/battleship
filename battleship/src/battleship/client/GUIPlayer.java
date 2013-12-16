@@ -2,23 +2,49 @@ package battleship.client;
 
 import battleship.model.*;
 
-
+/**
+ * Graphical User Interface
+ * @author brian
+ */
 public class GUIPlayer extends Player
 {
     
     public GUIPlayer( String name )
     {
         super( name );
+        SelectOptionJFrame frame = new SelectOptionJFrame();
+        frame.setVisible(true);
     }
 
     @Override
     protected void stateChanged(EngineState state) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        switch( state )
+        {
+            case SELECTING_OPPONEND:
+                break;
+            case PREPARING_GRID:
+                break;
+            case PLAY:
+                break;
+            case YOUR_TURN:
+                break;
+            case OPPONENDS_TURN:
+                break;
+            case YOU_LOST:
+                break;
+            case YOU_WON:
+                break;
+            case FINISHED:
+                break;
+            default:
+                throw new AssertionError(state.name());
+            
+        }
     }
 
     @Override
     protected void update(ShootState[][] myBoard, ShootState[][] opponendBoard) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
     
 }
