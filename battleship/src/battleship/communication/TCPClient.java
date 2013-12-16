@@ -1,5 +1,5 @@
 
-package battleship.model;
+package battleship.communication;
 
 import java.net.*;
 import java.io.*;

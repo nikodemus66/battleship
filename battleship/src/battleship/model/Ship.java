@@ -4,8 +4,6 @@
  */
 package battleship.model;
 
-import battleship.controller.*;
-
 /**
  *
  * @author nikodemus

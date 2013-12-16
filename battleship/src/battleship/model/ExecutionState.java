@@ -6,6 +6,8 @@
 
 package battleship.model;
 
+import battleship.model.ShootState;
+
 /**
  *
  * @author kraeki

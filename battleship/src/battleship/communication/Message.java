@@ -1,4 +1,4 @@
-package battleship.model;
+package battleship.communication;
 
 import battleship.util.Utils;
 import java.io.ByteArrayInputStream;

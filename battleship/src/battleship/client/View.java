@@ -4,9 +4,7 @@
  *
  */
 
-package battleship.view;
-
-import battleship.controller.*;
+package battleship.client;
 
 /**
  *

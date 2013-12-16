@@ -4,9 +4,9 @@
  */
 package battleship;
 
-import battleship.controller.*;
-import battleship.model.*;
-import battleship.view.*;
+import battleship.client.CommandLinePlayer;
+import battleship.client.GUIPlayer;
+import battleship.client.Player;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -15,13 +15,15 @@ import java.util.logging.SimpleFormatter;
 
 /**
  *
- * @author nikodemus
+ * @author kraeki
  */
 public class Battleship
 {
   private final static Logger LOGGER = Logger.getLogger("");
+  
   /**
    * @param args the command line arguments
+     * @throws java.lang.Exception
    */
   public static void main( String[] args ) throws Exception
   {
@@ -34,17 +36,11 @@ public class Battleship
    handler.setFormatter(formatter);
 
 
-
-
-    HumanPlayer player = new HumanPlayer( "HumanPlayer" );
-
-
-
-
-//    View v = null;
-//    if( args.length > 0 && args[0].equals( "--cli" ))
-//      player.setUserInterface( CommandLineView );
-//    else
-//      player.setUserInterface( GUI2dView );
+    Player player;
+    if( args.length > 0 && args[0].equals( "--cli" ))
+      player = new CommandLinePlayer( "HumanPlayer" );
+    else
+      player = new GUIPlayer( "HumanPlayer" );
+    
   }
 }

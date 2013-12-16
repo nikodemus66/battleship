@@ -6,7 +6,6 @@
 
 package battleship.model;
 
-import battleship.controller.*;
 import java.util.ArrayList;
 
 /**

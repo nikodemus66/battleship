@@ -2,8 +2,15 @@
  * Diese Klasse ist für die Spiellogik verantwortlich
  *
  */
-package battleship.controller;
+package battleship.server;
 
+import battleship.model.EngineState;
+import battleship.model.ShipType;
+import battleship.communication.Message;
+import battleship.communication.MessageType;
+import battleship.communication.ClientConnection;
+import battleship.communication.IServerListener;
+import battleship.communication.TCPServer;
 import battleship.model.*;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;

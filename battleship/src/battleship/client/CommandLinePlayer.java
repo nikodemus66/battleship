@@ -4,11 +4,13 @@
  * and open the template in the editor.
  */
 
-package battleship.model;
+package battleship.client;
 
-import battleship.controller.Engine;
-import battleship.controller.EngineState;
-import battleship.controller.ShipType;
+import battleship.server.Engine;
+import battleship.model.EngineState;
+import battleship.model.ShipType;
+import battleship.model.Ship;
+import battleship.model.ShootState;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -19,10 +21,10 @@ import java.util.logging.Logger;
  *
  * @author kraeki
  */
-public class HumanPlayer extends Player
+public class CommandLinePlayer extends Player
 {
 
-  public HumanPlayer( String name )
+  public CommandLinePlayer( String name )
   {
     super(name);
     start( );
@@ -72,20 +74,12 @@ public class HumanPlayer extends Player
         System.out.println( "error: opponend " + tmp + " does not exist" );
     }
 
-    //    while( true )
-    //    {
-    //        try {
-    //            Thread.sleep(300);
-    //        } catch (InterruptedException ex) {
-    //            Logger.getLogger(HumanPlayer.class.getName()).log(Level.SEVERE, null, ex);
-    //        }
-    //    }
-    System.out.println( "HumanPlayer: Terminated" );
+    //System.out.println( "CommandLinePlayer: Terminated" );
   }
 
   @Override
   protected void stateChanged(EngineState state) {
-    System.out.println( "HumanPlayer: got informed about engine state: " + state.name());
+    //System.out.println( "CommandLinePlayer: got informed about engine state: " + state.name());
     switch( state )
     {
       case SELECTING_OPPONEND:
@@ -95,7 +89,7 @@ public class HumanPlayer extends Player
         break;
       case PREPARING_GRID:
         {
-            update( ); // draws baord
+          update( ); // draws baord
 
           int count = ships.size( );
           while ( count > 0 )
@@ -182,7 +176,7 @@ public class HumanPlayer extends Player
     System.out.println( );
   }
 
-  private synchronized void drawBoard( ShootState[][] board )
+  private void drawBoard( ShootState[][] board )
   {
     System.out.println( board );
     System.out.println( );

@@ -1,9 +1,10 @@
-package battleship.model;
+package battleship.client;
 
-import battleship.controller.EngineState;
-import battleship.controller.ShipType;
-import battleship.model.Message;
-import battleship.model.Player;
+import battleship.model.EngineState;
+import battleship.model.ShipType;
+import battleship.communication.Message;
+import battleship.client.Player;
+import battleship.model.ShootState;
 import java.util.logging.Logger;
 
 /**

@@ -4,20 +4,15 @@
  * and open the template in the editor.
  */
 
-package battleship.controller;
+package battleship.model;
 
 /**
  *
  * @author kraeki
  */
+public enum ShipType {
 
-  public enum EngineState { 
-      SELECTING_OPPONEND, 
-      PREPARING_GRID, 
-      PLAY, 
-      YOUR_TURN, 
-      OPPONENDS_TURN, 
-      YOU_LOST,
-      YOU_WON,
-      FINISHED 
-  }
+    TERMINATOR,
+    KILLER,
+    UBOOT
+}

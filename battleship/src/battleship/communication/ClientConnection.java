@@ -4,8 +4,10 @@
  * and open the template in the editor.
  */
 
-package battleship.model;
+package battleship.communication;
 
+import battleship.communication.IServerListener;
+import battleship.communication.TCPClient;
 import battleship.util.Utils;
 import static battleship.util.Utils.bytesToHex;
 import java.io.BufferedInputStream;
@@ -24,7 +26,7 @@ public class ClientConnection implements Runnable
   private Thread thread;
   private final IServerListener listener;
 
-  ClientConnection( Socket clientSocket, IServerListener listener )
+  public ClientConnection( Socket clientSocket, IServerListener listener )
   {
     this.clientSocket = clientSocket;
     this.listener = listener;

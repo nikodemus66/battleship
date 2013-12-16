@@ -10,18 +10,14 @@ package battleship.model;
  *
  * @author kraeki
  */
-  public enum MessageType {
-    REGISTER,
-    
-    PLACE_SHIP,
-    PLACE_SHIP_RESPONSE,
-    
-    PLAYER_READY,
-    
-    SHOOT,
-    OPPONEND_SHOOT,
-    SHOOT_RESPONSE,
-    
-    RESTART,
-    STATE_CHANGE
+
+  public enum EngineState { 
+      SELECTING_OPPONEND, 
+      PREPARING_GRID, 
+      PLAY, 
+      YOUR_TURN, 
+      OPPONENDS_TURN, 
+      YOU_LOST,
+      YOU_WON,
+      FINISHED 
   }

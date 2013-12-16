@@ -4,9 +4,17 @@
  * and open the template in the editor.
  */
 
-package battleship.model;
+package battleship.client;
 
-import battleship.controller.*;
+import battleship.model.ExecutionState;
+import battleship.model.EngineState;
+import battleship.model.ShipType;
+import battleship.communication.IClientListener;
+import battleship.communication.Message;
+import battleship.communication.MessageType;
+import battleship.model.Ship;
+import battleship.model.ShootState;
+import battleship.communication.TCPClient;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

@@ -4,9 +4,10 @@
  * and open the template in the editor.
  */
 
-package battleship.controller;
+package battleship.server;
 
-import battleship.model.ClientConnection;
+import battleship.model.EngineState;
+import battleship.communication.ClientConnection;
 import battleship.model.Grid;
 
 /**
