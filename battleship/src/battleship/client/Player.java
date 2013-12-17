@@ -37,13 +37,17 @@ public abstract class Player implements IClientListener
   private ShootState[][] myBoard;
   private ShootState[][] opponendBoard;
 
-    ArrayList<ShipType> ships = new ArrayList<ShipType>( )
+  private static ArrayList<ShipType> ships = new ArrayList<ShipType>( )
     {{
       //add( ShipType.TERMINATOR );
       //add( ShipType.KILLER );
       add( ShipType.UBOOT );
     }};
 
+   public static ArrayList<ShipType> getShips( )
+   {
+       return new ArrayList( ships );
+   }
 
   public Player( String name )
   {

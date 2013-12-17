@@ -90,6 +90,7 @@ public class CommandLinePlayer extends Player
       case PREPARING_GRID:
         {
           update( ); // draws baord
+          ArrayList<ShipType> ships = Player.getShips();
 
           int count = ships.size( );
           while ( count > 0 )

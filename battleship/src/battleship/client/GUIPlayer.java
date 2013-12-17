@@ -12,8 +12,15 @@ public class GUIPlayer extends Player
     public GUIPlayer( String name )
     {
         super( name );
-        SelectOptionJFrame frame = new SelectOptionJFrame();
+        SelectOptionJFrame frame = new SelectOptionJFrame( this );
         frame.setVisible(true);
+        
+        PlacingShipJFrame pFrame = new PlacingShipJFrame( this );
+        pFrame.setVisible(true);
+        
+        
+        
+        
     }
 
     @Override
