@@ -22,12 +22,14 @@ import javax.swing.ListModel;
  */
 public class PlacingShipJFrame extends javax.swing.JFrame {
 
-    DefaultListModel model;
+    private DefaultListModel model;
+    private GUIPlayer player;
     
     /**
      * Creates new form PlacingShipJFrame
      */
     public PlacingShipJFrame(GUIPlayer player) {
+        this.player = player;
         initComponents();
         
         myMapJPanel.addMouseListener( new MouseListener() {
@@ -63,8 +65,9 @@ public class PlacingShipJFrame extends javax.swing.JFrame {
                     // remove 
                 model.removeElementAt(selectedIndex);
                 //}
-                //shipsAvailableList.remove(0);
-                //shipsAvailableList.repaint();
+                if(model.isEmpty()){
+                    //PlacingShipJFrame.this.player.playerReady();
+                }
             }
 
             @Override
