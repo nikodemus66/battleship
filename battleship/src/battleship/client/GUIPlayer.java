@@ -8,19 +8,14 @@ import battleship.model.*;
  */
 public class GUIPlayer extends Player
 {
+    SelectOptionJFrame optionFrame;
+    PlacingShipJFrame placingShipFrame;
     
     public GUIPlayer( String name )
     {
         super( name );
-        SelectOptionJFrame frame = new SelectOptionJFrame( this );
-        frame.setVisible(true);
-        
-        PlacingShipJFrame pFrame = new PlacingShipJFrame( this );
-        pFrame.setVisible(true);
-        
-        
-        
-        
+        optionFrame = new SelectOptionJFrame( this );
+        optionFrame.setVisible(true);   
     }
 
     @Override
@@ -30,8 +25,12 @@ public class GUIPlayer extends Player
             case SELECTING_OPPONEND:
                 break;
             case PREPARING_GRID:
+                optionFrame.setVisible(false);   
+                placingShipFrame = new PlacingShipJFrame( this );
+                placingShipFrame.setVisible(true);     
                 break;
             case PLAY:
+                placingShipFrame.setVisible(false);     
                 break;
             case YOUR_TURN:
                 break;

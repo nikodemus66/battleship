@@ -6,17 +6,22 @@
 
 package battleship.client;
 
+import battleship.server.Engine;
+
 /**
  *
  * @author kraeki
  */
 public class SelectOptionJFrame extends javax.swing.JFrame {
+    
+    GUIPlayer player;
 
     /**
      * Creates new form NewJFrame
      */
     public SelectOptionJFrame(GUIPlayer player ) {
         initComponents();
+        this.player = player;
     }
 
 
@@ -30,28 +35,29 @@ public class SelectOptionJFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         buttonGroup1 = new javax.swing.ButtonGroup();
-        jRadioButton1 = new javax.swing.JRadioButton();
-        jRadioButton2 = new javax.swing.JRadioButton();
-        jRadioButton3 = new javax.swing.JRadioButton();
+        AIRadioButton = new javax.swing.JRadioButton();
+        serverRadioButton = new javax.swing.JRadioButton();
+        connectRadioButton = new javax.swing.JRadioButton();
         jLabel1 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        ipField = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Battleship");
 
-        buttonGroup1.add(jRadioButton1);
-        jRadioButton1.setText("Play vs AI");
+        buttonGroup1.add(AIRadioButton);
+        AIRadioButton.setSelected(true);
+        AIRadioButton.setText("Play vs AI");
 
-        buttonGroup1.add(jRadioButton2);
-        jRadioButton2.setText("Create Server");
+        buttonGroup1.add(serverRadioButton);
+        serverRadioButton.setText("Create Server");
 
-        buttonGroup1.add(jRadioButton3);
-        jRadioButton3.setText("Connect to Network Player");
+        buttonGroup1.add(connectRadioButton);
+        connectRadioButton.setText("Connect to Network Player");
 
         jLabel1.setText("Choose from options:");
 
-        jTextField1.setText("127.0.0.1");
+        ipField.setText("127.0.0.1");
 
         jButton1.setText("Start");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -74,11 +80,11 @@ public class SelectOptionJFrame extends javax.swing.JFrame {
                             .addComponent(jButton1)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addGroup(layout.createSequentialGroup()
-                                    .addComponent(jRadioButton3)
+                                    .addComponent(connectRadioButton)
                                     .addGap(18, 18, 18)
-                                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addComponent(jRadioButton2)
-                                .addComponent(jRadioButton1)))))
+                                    .addComponent(ipField, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(serverRadioButton)
+                                .addComponent(AIRadioButton)))))
                 .addContainerGap(18, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -87,13 +93,13 @@ public class SelectOptionJFrame extends javax.swing.JFrame {
                 .addGap(37, 37, 37)
                 .addComponent(jLabel1)
                 .addGap(18, 18, 18)
-                .addComponent(jRadioButton1)
+                .addComponent(AIRadioButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jRadioButton2)
+                .addComponent(serverRadioButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jRadioButton3)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(connectRadioButton)
+                    .addComponent(ipField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(55, 55, 55)
                 .addComponent(jButton1)
                 .addContainerGap(42, Short.MAX_VALUE))
@@ -103,20 +109,49 @@ public class SelectOptionJFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        
-        
-        
+        if( AIRadioButton.isSelected( ))
+        {
+            // start game vs AI
+          Engine engine = new Engine( ); // controller
+          engine.start();
+
+          this.player.connect("127.0.0.1");
+
+          AIPlayer player2 = new AIPlayer( "AIPlayer" );
+          player2.connect("127.0.0.1");
+        }
+        else if( serverRadioButton.isSelected( ))
+        {
+          Engine engine = new Engine( ); // controller
+          engine.start();
+
+          this.player.connect("127.0.0.1");
+        }
+        else if( connectRadioButton.isSelected( ))
+        {
+            if( ipField.getText().isEmpty( ))
+            {
+                // inform user to enter ip of opponent server
+                return;
+            }
+          this.player.connect( ipField.getText( ));
+        }
+        else
+        {
+            // inform user to select an option
+            return;
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JRadioButton AIRadioButton;
     private javax.swing.ButtonGroup buttonGroup1;
+    private javax.swing.JRadioButton connectRadioButton;
+    private javax.swing.JTextField ipField;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JRadioButton jRadioButton1;
-    private javax.swing.JRadioButton jRadioButton2;
-    private javax.swing.JRadioButton jRadioButton3;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JRadioButton serverRadioButton;
     // End of variables declaration//GEN-END:variables
 }
