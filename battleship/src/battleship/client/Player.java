@@ -36,6 +36,9 @@ public abstract class Player implements IClientListener
 
   private ShootState[][] myBoard;
   private ShootState[][] opponendBoard;
+  
+  public ShootState[][] getMyBoard( ){ return myBoard; }
+  public ShootState[][] getOpponendBoard( ){ return opponendBoard; }
 
   private static ArrayList<ShipType> ships = new ArrayList<ShipType>( )
     {{
