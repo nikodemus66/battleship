@@ -29,8 +29,7 @@ public class GUIPlayer extends Player
                 placingShipFrame = new PlacingShipJFrame( this );
                 placingShipFrame.setVisible(true);     
                 break;
-            case PLAY:
-                placingShipFrame.setVisible(false);     
+            case PLAY:   
                 break;
             case YOUR_TURN:
                 break;

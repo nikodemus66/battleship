@@ -7,6 +7,7 @@
 package battleship.client;
 
 import battleship.model.ShipType;
+import battleship.model.ShootState;
 import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -35,6 +36,7 @@ public class PlacingShipJFrame extends javax.swing.JFrame {
         myMapJPanel.addMouseListener( new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                GUIPlayer player = PlacingShipJFrame.this.player;
                 int width = e.getComponent().getWidth();
                 int height = e.getComponent().getHeight();
                 float x = e.getX();
@@ -60,14 +62,17 @@ public class PlacingShipJFrame extends javax.swing.JFrame {
                 System.out.println("placing ship type: "+ ship );
                 
                 
-                //if ( player.placeShip( ship, cx, cy, true ))
-                //{
+                if ( player.placeShip( ship, cx, cy, true ))
+                {
                     // remove 
-                model.removeElementAt(selectedIndex);
-                //}
-                if(model.isEmpty()){
-                    //PlacingShipJFrame.this.player.playerReady();
+                    model.removeElementAt(selectedIndex);
+                    update(player.getMyBoard(), player.getOpponendBoard());
                 }
+                if(model.isEmpty()){
+                    player.playerReady();
+                    System.out.println("I am ready");
+                }
+                //player.getMyBoard();
             }
 
             @Override
@@ -145,6 +150,42 @@ public class PlacingShipJFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    public void update(ShootState[][] myBoard, ShootState[][] opponendBoard) {
+        //zeichne das Spielfeld neu
+        for( int y = 0; y < myBoard.length; y++ )
+        {
+          for( int x = 0; x < myBoard[y].length; x++ )
+          {
+              JPanel field = (JPanel)myMapJPanel.getComponent(x+10*y);
+              //JPanel field = (JPanel)myMapJPanel.getComponent(26);
+                System.out.println("board " + x + " " + y + " " + myBoard[x][y].name() + " | " + (x+10*y));
+              switch( myBoard[x][y] )
+                {
+                  case WATER:
+                    field.setBackground(Color.blue);  
+                    break;
+                  case SHIP:
+                    field.setBackground(Color.gray);
+                    break;
+                  case MISS:
+                    field.setBackground(Color.green);
+                    break;
+                  case HIT:
+                    field.setBackground(Color.black);
+                    break;
+                  case HIT_SUNKEN:
+                    field.setBackground(Color.red);
+                    break;
+                  default:
+                    throw new AssertionError(myBoard[x][y].name());
+                }
+          }
+        }
+    }
+    
+    //erstelle das neue Frame
+    public void playFrame(){}
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane jScrollPane1;
