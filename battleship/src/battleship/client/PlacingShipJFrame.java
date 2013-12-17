@@ -22,13 +22,14 @@ import javax.swing.ListModel;
  *
  * @author brian
  */
-public class PlacingShipJFrame extends javax.swing.JFrame {
+public final class PlacingShipJFrame extends javax.swing.JFrame {
 
     private DefaultListModel model;
     private GUIPlayer player;
     
     /**
      * Creates new form PlacingShipJFrame
+     * @param player
      */
     public PlacingShipJFrame(GUIPlayer player) {
         this.player = player;
@@ -52,15 +53,8 @@ public class PlacingShipJFrame extends javax.swing.JFrame {
                     // tell user to select ship
                     return;
                 }
-                
-                System.out.println("width: " + width );
-                System.out.println("height: " + height );
-                System.out.println("x: "+ x+ "  y: " + y );
-                
                 int cx = (int)(x / width * 10);
                 int cy = (int)(y / height * 10);
-                System.out.println("calced x: "+ cx+ "  y: " + cy );
-                System.out.println("placing ship type: "+ ship );
                 
                 
                 if ( player.placeShip( ship, cx, cy, true ))
@@ -71,7 +65,6 @@ public class PlacingShipJFrame extends javax.swing.JFrame {
                 }
                 if(model.isEmpty()){
                     player.playerReady();
-                    System.out.println("I am ready");
                 }
             }
 
@@ -123,6 +116,9 @@ public class PlacingShipJFrame extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         shipsAvailableList = new javax.swing.JList();
         opponendMapJPanel = new javax.swing.JPanel();
+        statusLabel = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -139,23 +135,45 @@ public class PlacingShipJFrame extends javax.swing.JFrame {
         opponendMapJPanel.setName(""); // NOI18N
         opponendMapJPanel.setLayout(new java.awt.GridLayout(10, 10));
 
+        statusLabel.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        statusLabel.setText("status");
+        statusLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+
+        jLabel1.setText("Your grid");
+
+        jLabel2.setText("Opponend's grid");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(myMapJPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(opponendMapJPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(105, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(statusLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(myMapJPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel1))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel2)
+                            .addComponent(opponendMapJPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(24, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(74, Short.MAX_VALUE)
+                .addContainerGap()
+                .addComponent(statusLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(opponendMapJPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -174,8 +192,7 @@ public class PlacingShipJFrame extends javax.swing.JFrame {
           for( int x = 0; x < board[y].length; x++ )
           {
               JPanel field = (JPanel)map.getComponent(x+10*y);
-                System.out.println("board " + x + " " + y + " " + board[x][y].name() + " | " + (x+10*y));
-              switch( board[x][y] )
+               switch( board[x][y] )
                 {
                   case WATER:
                     field.setBackground(Color.blue);  
@@ -205,10 +222,12 @@ public class PlacingShipJFrame extends javax.swing.JFrame {
         switch( state )
         {
             case PLAY:  
+                statusLabel.setText("Game starts");
                 opponendMapJPanel.setVisible(true);
                 update(player.getOpponendBoard(), opponendMapJPanel );
                 break;
             case YOUR_TURN:
+                statusLabel.setText("Your turn");
                 update(player.getMyBoard(), myMapJPanel );
                 opponendMapJPanel.addMouseListener( new MouseListener() {
                     @Override
@@ -220,7 +239,6 @@ public class PlacingShipJFrame extends javax.swing.JFrame {
                         float y = e.getY();
                         int cx = (int)(x / width * 10);
                         int cy = (int)(y / height * 10);
-                        System.out.println("shoot at x: "+ cx+ "  y: " + cy );
 
 
                         ShootState state = player.shoot( cx, cy );
@@ -255,10 +273,13 @@ public class PlacingShipJFrame extends javax.swing.JFrame {
                 );
                 break;
             case OPPONENDS_TURN:
+                statusLabel.setText("Opponents turn");
                 break;
             case YOU_LOST:
+                statusLabel.setText("You lost");
                 break;
             case YOU_WON:
+                statusLabel.setText("You won");
                 break;
             case FINISHED:
                 break;
@@ -270,9 +291,12 @@ public class PlacingShipJFrame extends javax.swing.JFrame {
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPanel myMapJPanel;
     private javax.swing.JPanel opponendMapJPanel;
     private javax.swing.JList shipsAvailableList;
+    private javax.swing.JLabel statusLabel;
     // End of variables declaration//GEN-END:variables
 }
