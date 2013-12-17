@@ -12,7 +12,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
 import javax.swing.JPanel;
+import javax.swing.ListModel;
 
 /**
  *
@@ -20,6 +22,8 @@ import javax.swing.JPanel;
  */
 public class PlacingShipJFrame extends javax.swing.JFrame {
 
+    DefaultListModel model;
+    
     /**
      * Creates new form PlacingShipJFrame
      */
@@ -34,7 +38,9 @@ public class PlacingShipJFrame extends javax.swing.JFrame {
                 float x = e.getX();
                 float y = e.getY();
                 
-                ShipType ship = (ShipType) shipsAvailableList.getSelectedValue();
+                
+                int selectedIndex = shipsAvailableList.getSelectedIndex();
+                ShipType ship = (ShipType)model.getElementAt(selectedIndex);
                 
                 if( ship == null )
                 {
@@ -51,9 +57,11 @@ public class PlacingShipJFrame extends javax.swing.JFrame {
                 System.out.println("calced x: "+ cx+ "  y: " + cy );
                 System.out.println("placing ship type: "+ ship );
                 
+                
                 //if ( player.placeShip( ship, cx, cy, true ))
                 //{
                     // remove 
+                model.removeElementAt(selectedIndex);
                 //}
                 //shipsAvailableList.remove(0);
                 //shipsAvailableList.repaint();
@@ -79,13 +87,10 @@ public class PlacingShipJFrame extends javax.swing.JFrame {
        
         }
        
-        
-          ArrayList<ShipType> ships = Player.getShips();
-//          for( ShipType s : ships )
-//          {
-            shipsAvailableList.setListData(ships.toArray());
-//          }
-        
+        model = new DefaultListModel();
+        for( ShipType s : Player.getShips( ))
+            model.addElement(s);
+        shipsAvailableList.setModel(model);
     }
 
     /**
