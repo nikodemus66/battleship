@@ -29,15 +29,20 @@ public class GUIPlayer extends Player
                 placingShipFrame = new PlacingShipJFrame( this );
                 placingShipFrame.setVisible(true);     
                 break;
-            case PLAY:   
+            case PLAY:  
+                placingShipFrame.stateChanged(state);
                 break;
             case YOUR_TURN:
+                placingShipFrame.stateChanged(state);
                 break;
             case OPPONENDS_TURN:
+                placingShipFrame.stateChanged(state);
                 break;
             case YOU_LOST:
+                placingShipFrame.stateChanged(state);
                 break;
             case YOU_WON:
+                placingShipFrame.stateChanged(state);
                 break;
             case FINISHED:
                 break;

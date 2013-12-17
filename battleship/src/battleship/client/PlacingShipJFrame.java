@@ -6,6 +6,7 @@
 
 package battleship.client;
 
+import battleship.model.EngineState;
 import battleship.model.ShipType;
 import battleship.model.ShootState;
 import java.awt.Color;
@@ -66,13 +67,12 @@ public class PlacingShipJFrame extends javax.swing.JFrame {
                 {
                     // remove 
                     model.removeElementAt(selectedIndex);
-                    update(player.getMyBoard(), player.getOpponendBoard());
+                    update(player.getMyBoard(), myMapJPanel );
                 }
                 if(model.isEmpty()){
                     player.playerReady();
                     System.out.println("I am ready");
                 }
-                //player.getMyBoard();
             }
 
             @Override
@@ -86,14 +86,23 @@ public class PlacingShipJFrame extends javax.swing.JFrame {
             }
         );
         
-        // create grid
+        // create my grid
         for(int i=0;i<100;i++)
         {
             JPanel field = new JPanel();
             field.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
             myMapJPanel.add(field);
-       
         }
+        update(player.getMyBoard(), myMapJPanel );
+        // create grid opponend
+        for(int i=0;i<100;i++)
+        {
+            JPanel field = new JPanel();
+            field.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+            opponendMapJPanel.add(field);
+        }
+        opponendMapJPanel.setVisible(false);
+        
        
         model = new DefaultListModel();
         for( ShipType s : Player.getShips( ))
@@ -113,6 +122,7 @@ public class PlacingShipJFrame extends javax.swing.JFrame {
         myMapJPanel = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         shipsAvailableList = new javax.swing.JList();
+        opponendMapJPanel = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -126,40 +136,46 @@ public class PlacingShipJFrame extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(shipsAvailableList);
 
+        opponendMapJPanel.setName(""); // NOI18N
+        opponendMapJPanel.setLayout(new java.awt.GridLayout(10, 10));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(23, 23, 23)
+                .addContainerGap()
                 .addComponent(myMapJPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(126, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(opponendMapJPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(105, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(26, 26, 26)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(74, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(opponendMapJPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(myMapJPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(74, Short.MAX_VALUE))
+                .addGap(62, 62, 62))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    public void update(ShootState[][] myBoard, ShootState[][] opponendBoard) {
+    public void update(ShootState[][] board, JPanel map )
+    {
         //zeichne das Spielfeld neu
-        for( int y = 0; y < myBoard.length; y++ )
+        for( int y = 0; y < board.length; y++ )
         {
-          for( int x = 0; x < myBoard[y].length; x++ )
+          for( int x = 0; x < board[y].length; x++ )
           {
-              JPanel field = (JPanel)myMapJPanel.getComponent(x+10*y);
-              //JPanel field = (JPanel)myMapJPanel.getComponent(26);
-                System.out.println("board " + x + " " + y + " " + myBoard[x][y].name() + " | " + (x+10*y));
-              switch( myBoard[x][y] )
+              JPanel field = (JPanel)map.getComponent(x+10*y);
+                System.out.println("board " + x + " " + y + " " + board[x][y].name() + " | " + (x+10*y));
+              switch( board[x][y] )
                 {
                   case WATER:
                     field.setBackground(Color.blue);  
@@ -177,19 +193,86 @@ public class PlacingShipJFrame extends javax.swing.JFrame {
                     field.setBackground(Color.red);
                     break;
                   default:
-                    throw new AssertionError(myBoard[x][y].name());
+                    throw new AssertionError(board[x][y].name());
                 }
           }
         }
     }
     
-    //erstelle das neue Frame
-    public void playFrame(){}
+    
+   public void stateChanged( EngineState state)
+   {
+        switch( state )
+        {
+            case PLAY:  
+                opponendMapJPanel.setVisible(true);
+                update(player.getOpponendBoard(), opponendMapJPanel );
+                break;
+            case YOUR_TURN:
+                update(player.getMyBoard(), myMapJPanel );
+                opponendMapJPanel.addMouseListener( new MouseListener() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        GUIPlayer player = PlacingShipJFrame.this.player;
+                        int width = e.getComponent().getWidth();
+                        int height = e.getComponent().getHeight();
+                        float x = e.getX();
+                        float y = e.getY();
+                        int cx = (int)(x / width * 10);
+                        int cy = (int)(y / height * 10);
+                        System.out.println("shoot at x: "+ cx+ "  y: " + cy );
+
+
+                        ShootState state = player.shoot( cx, cy );
+                        switch( state )
+                        {
+                            case NOT_POSSIBLE:
+                                // inform user not possible
+                                return;
+                            case MISS:
+                                update(player.getOpponendBoard(), opponendMapJPanel );
+                                break;
+                            case HIT:
+                                update(player.getOpponendBoard(), opponendMapJPanel );
+                                break;
+                            case HIT_SUNKEN:
+                                update(player.getOpponendBoard(), opponendMapJPanel );
+                                break;
+                            default:
+                                throw new AssertionError(state.name());
+                        }
+                    }
+
+                    @Override
+                    public void mousePressed(MouseEvent e) {}
+                    @Override
+                    public void mouseReleased(MouseEvent e) {}
+                    @Override
+                    public void mouseEntered(MouseEvent e) {}
+                    @Override
+                    public void mouseExited(MouseEvent e) {}
+                    }
+                );
+                break;
+            case OPPONENDS_TURN:
+                break;
+            case YOU_LOST:
+                break;
+            case YOU_WON:
+                break;
+            case FINISHED:
+                break;
+            default:
+                throw new AssertionError(state.name());
+            
+        }
+   }
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPanel myMapJPanel;
+    private javax.swing.JPanel opponendMapJPanel;
     private javax.swing.JList shipsAvailableList;
     // End of variables declaration//GEN-END:variables
 }
