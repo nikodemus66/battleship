@@ -28,6 +28,7 @@ public class SelectOptionJFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        buttonGroup1 = new javax.swing.ButtonGroup();
         jInternalFrame1 = new javax.swing.JInternalFrame();
         jRadioButton1 = new javax.swing.JRadioButton();
         jRadioButton2 = new javax.swing.JRadioButton();
@@ -41,10 +42,13 @@ public class SelectOptionJFrame extends javax.swing.JFrame {
         jInternalFrame1.setTitle("Battleship");
         jInternalFrame1.setVisible(true);
 
+        buttonGroup1.add(jRadioButton1);
         jRadioButton1.setText("Play vs AI");
 
+        buttonGroup1.add(jRadioButton2);
         jRadioButton2.setText("Create Server");
 
+        buttonGroup1.add(jRadioButton3);
         jRadioButton3.setText("Connect to Network Player");
 
         jLabel1.setText("Choose from options:");
@@ -52,7 +56,6 @@ public class SelectOptionJFrame extends javax.swing.JFrame {
         jTextField1.setText("127.0.0.1");
 
         jButton1.setText("Start");
-        jButton1.setActionCommand("Start");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -115,6 +118,8 @@ public class SelectOptionJFrame extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         
+        
+        
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
@@ -153,6 +158,7 @@ public class SelectOptionJFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton jButton1;
     private javax.swing.JInternalFrame jInternalFrame1;
     private javax.swing.JLabel jLabel1;
