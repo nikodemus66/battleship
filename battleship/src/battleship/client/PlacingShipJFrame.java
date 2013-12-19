@@ -274,9 +274,11 @@ public final class PlacingShipJFrame extends javax.swing.JFrame {
                 break;
             case OPPONENDS_TURN:
                 statusLabel.setText("Opponents turn");
+                update(player.getMyBoard(), myMapJPanel );
                 break;
             case YOU_LOST:
                 statusLabel.setText("You lost");
+                update(player.getMyBoard(), myMapJPanel );
                 break;
             case YOU_WON:
                 statusLabel.setText("You won");
