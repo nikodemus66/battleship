@@ -26,7 +26,7 @@ public final class PlacingShipJFrame extends javax.swing.JFrame {
 
     private DefaultListModel model;
     private GUIPlayer player;
-    
+
     /**
      * Creates new form PlacingShipJFrame
      * @param player
@@ -34,20 +34,24 @@ public final class PlacingShipJFrame extends javax.swing.JFrame {
     public PlacingShipJFrame(GUIPlayer player) {
         this.player = player;
         initComponents();
-        
+
         myMapJPanel.addMouseListener( new MouseListener() {
             @Override
-            public void mouseClicked(MouseEvent e) {
+            public void mouseClicked(MouseEvent e) { }
+
+            @Override
+            public void mousePressed(MouseEvent e)
+            {
                 GUIPlayer player = PlacingShipJFrame.this.player;
                 int width = e.getComponent().getWidth();
                 int height = e.getComponent().getHeight();
                 float x = e.getX();
                 float y = e.getY();
-                
-                
+
+
                 int selectedIndex = shipsAvailableList.getSelectedIndex();
                 ShipType ship = (ShipType)model.getElementAt(selectedIndex);
-                
+
                 if( ship == null )
                 {
                     // tell user to select ship
@@ -55,11 +59,11 @@ public final class PlacingShipJFrame extends javax.swing.JFrame {
                 }
                 int cx = (int)(x / width * 10);
                 int cy = (int)(y / height * 10);
-                
-                
+
+
                 if ( player.placeShip( ship, cx, cy, true ))
                 {
-                    // remove 
+                    // remove
                     model.removeElementAt(selectedIndex);
                     update(player.getMyBoard(), myMapJPanel );
                 }
@@ -67,9 +71,6 @@ public final class PlacingShipJFrame extends javax.swing.JFrame {
                     player.playerReady();
                 }
             }
-
-            @Override
-            public void mousePressed(MouseEvent e) {}
             @Override
             public void mouseReleased(MouseEvent e) {}
             @Override
@@ -78,7 +79,7 @@ public final class PlacingShipJFrame extends javax.swing.JFrame {
             public void mouseExited(MouseEvent e) {}
             }
         );
-        
+
         // create my grid
         for(int i=0;i<100;i++)
         {
@@ -95,8 +96,8 @@ public final class PlacingShipJFrame extends javax.swing.JFrame {
             opponendMapJPanel.add(field);
         }
         opponendMapJPanel.setVisible(false);
-        
-       
+
+
         model = new DefaultListModel();
         for( ShipType s : Player.getShips( ))
             model.addElement(s);
@@ -195,7 +196,7 @@ public final class PlacingShipJFrame extends javax.swing.JFrame {
                switch( board[x][y] )
                 {
                   case WATER:
-                    field.setBackground(Color.blue);  
+                    field.setBackground(Color.blue);
                     break;
                   case SHIP:
                     field.setBackground(Color.gray);
@@ -215,13 +216,13 @@ public final class PlacingShipJFrame extends javax.swing.JFrame {
           }
         }
     }
-    
-    
+
+
    public void stateChanged( EngineState state)
    {
         switch( state )
         {
-            case PLAY:  
+            case PLAY:
                 statusLabel.setText("Game starts");
                 opponendMapJPanel.setVisible(true);
                 update(player.getOpponendBoard(), opponendMapJPanel );
@@ -287,10 +288,10 @@ public final class PlacingShipJFrame extends javax.swing.JFrame {
                 break;
             default:
                 throw new AssertionError(state.name());
-            
+
         }
    }
-    
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
