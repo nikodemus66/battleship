@@ -6,13 +6,12 @@
 
 package battleship.communication;
 
-import battleship.communication.IServerListener;
-import battleship.communication.TCPClient;
-import battleship.util.Utils;
 import static battleship.util.Utils.bytesToHex;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,17 +24,28 @@ public class ClientConnection implements Runnable
   private final Socket clientSocket;
   private Thread thread;
   private final IServerListener listener;
+  private Queue<Message> queue;
+  private boolean up = false;
 
   public ClientConnection( Socket clientSocket, IServerListener listener )
   {
     this.clientSocket = clientSocket;
     this.listener = listener;
+    this.queue = new ArrayBlockingQueue<Message>( 1000, true );
   }
 
   public void start( )
   {
+    up = true;
     thread = new Thread( this );
     thread.start( );
+
+    new Thread( new Runnable( ){
+      public void run( )
+      {
+         handleMessage( );
+      }
+    }).start( );
   }
 
   public void run( )
@@ -86,7 +96,37 @@ public class ClientConnection implements Runnable
 
       //Logger.getGlobal().info( "ClientConnection: create message payload: " + Utils.bytesToHex( data ));
       m.setPayload( data );
-      listener.receive( this, m );
+      synchronized( this )
+      {
+        System.out.println( "ClientConnection: put message into queue" );
+        queue.add( m );
+        this.notify( );
+      }
+    }
+  }
+
+  public void handleMessage( ) // thread
+  {
+    while( up )
+    {
+      synchronized( this )
+      {
+        if( !queue.isEmpty( ))
+        {
+            System.out.println( "ClientConnection: receive message" );
+            listener.receive( this, queue.poll( ));
+        }
+        else
+        {
+          try {
+            System.out.println( "ClientConnection: going to sleep" );
+            this.wait( );
+            System.out.println( "ClientConnection: wake up" );
+          } catch (InterruptedException ex) {
+              Logger.getLogger(TCPClient.class.getName()).log(Level.SEVERE, null, ex);
+          }
+        }
+      }
     }
   }
 
